@@ -1,4 +1,8 @@
 
+using Microsoft.EntityFrameworkCore;
+using ShippingSystem.Core.Entities;
+using System;
+
 namespace ShippingSystem.API
 {
     public class Program
@@ -8,6 +12,20 @@ namespace ShippingSystem.API
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddCors(op =>
+            {
+                op.AddPolicy("CORSPolicy", builder =>
+                {
+                    builder.WithOrigins("http://localhost:4200")  // Your Angular app URL
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+                });
+            });
+            builder.Services.AddDbContext<ShippingContext>(options =>
+            {
+                options.UseLazyLoadingProxies().UseSqlServer(builder.Configuration.GetConnectionString("cs"));
+            });
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -19,6 +37,7 @@ namespace ShippingSystem.API
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                app.UseSwaggerUI(op => op.SwaggerEndpoint("/openapi/v1.json", "v1"));
             }
 
             app.UseHttpsRedirection();
