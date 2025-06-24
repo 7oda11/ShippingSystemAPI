@@ -44,14 +44,14 @@ namespace ShippingSystem.Core.Entities
         [ForeignKey("StatusId")]
         public virtual Status Status { get; set; }
 
-        public int? CityId { get; set; }
+        public int CityId { get; set; }
 
         [ForeignKey("CityId")]
         public virtual City City { get; set; }
 
-        public string ShippingTypeName { get; set; }
-        public  decimal ShippingPrice { get; set; }
-
+        public int ShippingTypeId { get; set; }
+        [ForeignKey("ShippingTypeId")]
+        public virtual ShippingType ShippingType { get; set; }
         public virtual ICollection<Product> Products { get; set; }
 
         public virtual ICollection<EmployeeAssignOrderToDelivery> Assignments { get; set; }
