@@ -33,10 +33,11 @@ namespace ShippingSystem.Core.Entities
 
         public DateTime CreationDate { get; set; }
 
-        public int VendorId { get; set; }
+        public int? VendorId { get; set; }
 
         [ForeignKey("VendorId")]
         public virtual Vendor Vendor { get; set; }
+
 
         public int StatusId { get; set; }
 
