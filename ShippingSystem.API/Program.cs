@@ -1,5 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
+using ShippingSystem.API.Mapping;
 using ShippingSystem.Core.Entities;
 using System;
 
@@ -26,6 +27,11 @@ namespace ShippingSystem.API
             {
                 options.UseLazyLoadingProxies().UseSqlServer(builder.Configuration.GetConnectionString("cs"));
             });
+            #region // Registering Repositories and UnitOfWork
+            builder.Services.AddScoped<ShippingContext>();
+            builder.Services.AddScoped<ShippingSystem.Core.Interfaces.IUnitOfWork, ShippingSystem.BL.Repositories.UnitOfWork>();
+            builder.Services.AddAutoMapper(typeof(MappConfig));
+            #endregion
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
