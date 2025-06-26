@@ -1,4 +1,9 @@
-﻿using ShippingSystem.Core.Entities;
+
+﻿//using ShippingSystem.BL.Repositories;
+using ShippingSystem.Core.Entities;
+
+
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +14,8 @@ namespace ShippingSystem.Core.Interfaces
 {
     public interface ICityRepository:IGenricRepository<City>
     {
+        Task<IEnumerable<City>> GetCitiesWithGovernmentsNameAsync();
+        Task<City> GetCityWithGovernmentByIdAsync(int id);
+        Task <City> GetCityWithName(string name);
     }
 }
