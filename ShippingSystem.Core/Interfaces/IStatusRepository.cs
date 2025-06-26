@@ -9,5 +9,10 @@ namespace ShippingSystem.Core.Interfaces
 {
     public interface IStatusRepository:IGenericRepository<Status>
     {
+        Task<IEnumerable<Status>> GetAllAsync();
+        Task<Status> GetByIdAsync(int id);
+        Task<Status> AddAsync(Status status);
+        Task UpdateAsync(Status status);
+        Task DeleteAsync(Status status);
     }
 }

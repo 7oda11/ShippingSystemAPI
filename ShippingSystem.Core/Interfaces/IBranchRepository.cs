@@ -11,5 +11,6 @@ namespace ShippingSystem.Core.Interfaces
     public interface IBranchRepository: IGenericRepository<Branch>
     {
 
+
     }
 }

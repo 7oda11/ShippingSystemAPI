@@ -7,13 +7,18 @@ using System.Threading.Tasks;
 namespace ShippingSystem.Core.Interfaces
 {
 
-    public interface IGenericRepository<T> where T : class
-    {
-        Task<List<T>> GetAllAsync();
-        Task<T> GetByIdAsync(int id);
-        Task AddAsync(T entity);
-        void Update(T entity);
-        void Delete(T entity);
-    }
+    
+        public interface IGenricRepository<T> where T : class
+        {
 
+           Task<List<T>> GetAll();
+            //public T Get(int id);
+             Task <T> GetById(int id);
+            Task Add(T entity);
+            Task Update(T entity);
+
+            Task Delete(T entity);
+
+        }
+    
 }
