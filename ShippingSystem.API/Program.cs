@@ -3,9 +3,7 @@ using ShippingSystem.API.Mapping;
 using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.Interfaces;
 using ShippingSystem.BL.Repositories;
-using ShippingSystem.BL.Services;
 using System;
-using ShippingSystem.Core.Service;
 
 namespace ShippingSystem.API
 {
@@ -38,10 +36,7 @@ namespace ShippingSystem.API
             builder.Services.AddAutoMapper(typeof(MappConfig));
             #endregion
 
-            #region // Registering Services
-            builder.Services.AddScoped<IShippingTypeService, ShippingTypeService>();
-            builder.Services.AddScoped<IWeightSettingService, WeightSettingService>();
-            #endregion
+      
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using ShippingSystem.Core.DTO;
+using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.Interfaces;
-using ShippingSystem.Core.Service;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ShippingSystem.API.Controllers
@@ -10,48 +12,63 @@ namespace ShippingSystem.API.Controllers
     [ApiController]
     public class ShippingTypeController : ControllerBase
     {
-        private readonly IShippingTypeService _service;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public ShippingTypeController(IShippingTypeService service)
+        public ShippingTypeController(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _service = service;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _service.GetAllAsync();
+            var types = await _unitOfWork.ShippingTypeRepository.GetAllAsync();
+            var result = _mapper.Map<List<ShippingTypeDTO>>(types);
             return Ok(result);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var type = await _service.GetByIdAsync(id);
+            var type = await _unitOfWork.ShippingTypeRepository.GetByIdAsync(id);
             if (type == null) return NotFound();
-            return Ok(type);
+            return Ok(_mapper.Map<ShippingTypeDTO>(type));
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ShippingTypeDTO dto)
         {
-            var created = await _service.CreateAsync(dto);
-            return Ok(created);
+            var entity = _mapper.Map<ShippingType>(dto);
+            await _unitOfWork.ShippingTypeRepository.AddAsync(entity);
+            await _unitOfWork.SaveAsync();
+            return Ok(_mapper.Map<ShippingTypeDTO>(entity));
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] ShippingTypeDTO dto)
         {
-            var updated = await _service.UpdateAsync(id, dto);
-            if (updated == null) return NotFound();
-            return Ok(updated);
+            var entity = await _unitOfWork.ShippingTypeRepository.GetByIdAsync(id);
+            if (entity == null) return NotFound();
+
+            entity.ShippingTypeName = dto.ShippingTypeName;
+            entity.ShippingPrice = dto.ShippingPrice;
+
+            _unitOfWork.ShippingTypeRepository.Update(entity);
+            await _unitOfWork.SaveAsync();
+
+            return Ok(_mapper.Map<ShippingTypeDTO>(entity));
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var success = await _service.DeleteAsync(id);
-            if (!success) return NotFound();
+            var entity = await _unitOfWork.ShippingTypeRepository.GetByIdAsync(id);
+            if (entity == null) return NotFound();
+
+            _unitOfWork.ShippingTypeRepository.Delete(entity);
+            await _unitOfWork.SaveAsync();
             return Ok();
         }
     }

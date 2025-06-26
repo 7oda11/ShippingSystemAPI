@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using ShippingSystem.Core.DTO;
+using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.Interfaces;
-using ShippingSystem.Core.Service;
-using ShippingSystem.Core.Service;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ShippingSystem.API.Controllers
@@ -11,48 +12,62 @@ namespace ShippingSystem.API.Controllers
     [ApiController]
     public class WeightSettingController : ControllerBase
     {
-        private readonly IWeightSettingService _service;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public WeightSettingController(IWeightSettingService service)
+        public WeightSettingController(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _service = service;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _service.GetAllAsync();
+            var list = await _unitOfWork.WeightSettingRepository.GetAllAsync();
+            var result = _mapper.Map<List<WeightSettingDTO>>(list);
             return Ok(result);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var setting = await _service.GetByIdAsync(id);
+            var setting = await _unitOfWork.WeightSettingRepository.GetByIdAsync(id);
             if (setting == null) return NotFound();
-            return Ok(setting);
+            return Ok(_mapper.Map<WeightSettingDTO>(setting));
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] WeightSettingDTO dto)
         {
-            var created = await _service.CreateAsync(dto);
-            return Ok(created);
+            var entity = _mapper.Map<WeightSetting>(dto);
+            await _unitOfWork.WeightSettingRepository.AddAsync(entity);
+            await _unitOfWork.SaveAsync();
+            return Ok(_mapper.Map<WeightSettingDTO>(entity));
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] WeightSettingDTO dto)
         {
-            var updated = await _service.UpdateAsync(id, dto);
-            if (updated == null) return NotFound();
-            return Ok(updated);
+            var entity = await _unitOfWork.WeightSettingRepository.GetByIdAsync(id);
+            if (entity == null) return NotFound();
+
+            entity.WeightRange = dto.WeightRange;
+            entity.ExtraPrice = dto.ExtraPrice;
+
+            _unitOfWork.WeightSettingRepository.Update(entity);
+            await _unitOfWork.SaveAsync();
+            return Ok(_mapper.Map<WeightSettingDTO>(entity));
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var success = await _service.DeleteAsync(id);
-            if (!success) return NotFound();
+            var entity = await _unitOfWork.WeightSettingRepository.GetByIdAsync(id);
+            if (entity == null) return NotFound();
+
+            _unitOfWork.WeightSettingRepository.Delete(entity);
+            await _unitOfWork.SaveAsync();
             return Ok();
         }
     }
