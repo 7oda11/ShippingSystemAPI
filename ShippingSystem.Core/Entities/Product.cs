@@ -18,6 +18,7 @@ namespace ShippingSystem.Core.Entities
         public double Quantity { get; set; }
 
         public double Weight { get; set; }
+        public decimal Price { get; set; }
 
         public int OrderId { get; set; }
 

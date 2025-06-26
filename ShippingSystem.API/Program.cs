@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+
+using ShippingSystem.API.Mapping;
 using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.SeedData;
 using System;
@@ -34,6 +36,12 @@ namespace ShippingSystem.API
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
      .AddEntityFrameworkStores<ShippingContext>()
      .AddDefaultTokenProviders();
+
+            #region // Registering Repositories and UnitOfWork
+            builder.Services.AddScoped<ShippingContext>();
+            builder.Services.AddScoped<ShippingSystem.Core.Interfaces.IUnitOfWork, ShippingSystem.BL.Repositories.UnitOfWork>();
+            builder.Services.AddAutoMapper(typeof(MappConfig));
+            #endregion
 
             var jwtSettings = builder.Configuration.GetSection("Jwt");
             var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);

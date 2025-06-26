@@ -33,24 +33,25 @@ namespace ShippingSystem.Core.Entities
 
         public DateTime CreationDate { get; set; }
 
-        public int VendorId { get; set; }
+        public int? VendorId { get; set; }
 
         [ForeignKey("VendorId")]
         public virtual Vendor Vendor { get; set; }
+
 
         public int StatusId { get; set; }
 
         [ForeignKey("StatusId")]
         public virtual Status Status { get; set; }
 
-        public int? CityId { get; set; }
+        public int CityId { get; set; }
 
         [ForeignKey("CityId")]
         public virtual City City { get; set; }
 
-        public string ShippingTypeName { get; set; }
-        public  decimal ShippingPrice { get; set; }
-
+        public int ShippingTypeId { get; set; }
+        [ForeignKey("ShippingTypeId")]
+        public virtual ShippingType ShippingType { get; set; }
         public virtual ICollection<Product> Products { get; set; }
 
         public virtual ICollection<EmployeeAssignOrderToDelivery> Assignments { get; set; }
