@@ -1,5 +1,6 @@
 
 
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using ShippingSystem.API.Mapping;
 using ShippingSystem.BL.Repositories;
 using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.Interfaces;
+using ShippingSystem.BL.Repositories;
 
 using System;
 using System.Text;
@@ -27,9 +29,9 @@ namespace ShippingSystem.API
                 op.AddPolicy("CORSPolicy", builder =>
                 {
                     builder.WithOrigins("http://localhost:4200")  // Your Angular app URL
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials();
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials();
                 });
             });
 
@@ -37,6 +39,7 @@ namespace ShippingSystem.API
             {
                 options.UseLazyLoadingProxies().UseSqlServer(builder.Configuration.GetConnectionString("cs"));
             });
+
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 
      .AddEntityFrameworkStores<ShippingContext>()
@@ -44,7 +47,7 @@ namespace ShippingSystem.API
 
             #region // Registering Repositories and UnitOfWork
             builder.Services.AddScoped<ShippingContext>();
-            builder.Services.AddScoped<ShippingSystem.Core.Interfaces.IUnitOfWork, ShippingSystem.BL.Repositories.UnitOfWork>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddAutoMapper(typeof(MappConfig));
             #endregion
 

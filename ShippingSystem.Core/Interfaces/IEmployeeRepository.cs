@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ShippingSystem.Core.Interfaces
 {
-    public interface IEmployeeRepository: IGenricRepository<Employee>
+    public interface IEmployeeRepository: IGenericRepository<Employee>
     {
     }
 }

@@ -1,5 +1,4 @@
 
-
 using ShippingSystem.Core.Entities;
 
 
@@ -12,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ShippingSystem.Core.Interfaces
 {
-    public interface ICityRepository:IGenricRepository<City>
+    public interface ICityRepository: IGenericRepository<City>
     {
         Task<IEnumerable<City>> GetCitiesWithGovernmentsNameAsync();
         Task<City> GetCityWithGovernmentByIdAsync(int id);

@@ -9,17 +9,17 @@ using System.Threading.Tasks;
 
 namespace ShippingSystem.BL.Repositories
 {
-    public class GenericRepository<T> : IGenricRepository<T> where T : class
+    public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        public ShippingContext context { get; }
+        protected readonly ShippingContext _context;
         private readonly DbSet<T> _dbSet;
 
-        public GenericRepository(ShippingContext ShippingContext)
+        public GenericRepository(ShippingContext context)
         {
-            this.context = ShippingContext;
+            _context = context;
             _dbSet = context.Set<T>();
-
         }
+
 
 
 

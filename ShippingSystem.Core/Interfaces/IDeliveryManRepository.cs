@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ShippingSystem.Core.Interfaces
 {
-    public interface IDeliveryManRepository:IGenricRepository<DeliveryMan>
+    public interface IDeliveryManRepository: IGenericRepository<DeliveryMan>
     {
     }
 }

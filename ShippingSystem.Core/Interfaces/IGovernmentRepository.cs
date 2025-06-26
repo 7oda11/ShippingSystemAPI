@@ -1,8 +1,6 @@
 
-
-
-﻿using System;
-
+using ShippingSystem.Core.Entities;
+using System;
 
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +10,7 @@ using ShippingSystem.Core.Entities;
 
 namespace ShippingSystem.Core.Interfaces
 {
-    public interface IGovernmentRepository: IGenricRepository<ShippingSystem.Core.Entities.Government>
+    public interface IGovernmentRepository: IGenericRepository<Government>
     {
         Task <IEnumerable<Government>> GetGovernmentsWithCitiesAsync();
         Task<Government> GetGovernmentWithCitiesByIdAsync(int id);

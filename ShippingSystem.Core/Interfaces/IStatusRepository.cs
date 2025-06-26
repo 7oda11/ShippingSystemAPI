@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ShippingSystem.Core.Interfaces
 {
-    public interface IStatusRepository:IGenricRepository<ShippingSystem.Core.Entities.Status>
+    public interface IStatusRepository:IGenericRepository<Status>
     {
         Task<IEnumerable<Status>> GetAllAsync();
         Task<Status> GetByIdAsync(int id);

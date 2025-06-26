@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Repositories\Service\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\ShippingSystem.Core\ShippingSystem.Core.csproj" />
   </ItemGroup>
 

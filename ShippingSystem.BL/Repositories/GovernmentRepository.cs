@@ -11,6 +11,7 @@ namespace ShippingSystem.BL.Repositories
 {
 
 
+
     public class GovernmentRepository : GenericRepository<Government>, IGovernmentRepository
 
 
@@ -28,6 +29,7 @@ namespace ShippingSystem.BL.Repositories
             return await context.Governments.Include(g => g.Cities)
                                              .ToListAsync();
         }
+
 
         public async Task<Government> GetGovernmentWithCitiesByIdAsync(int id)
         {

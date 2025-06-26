@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace ShippingSystem.Core.Interfaces
 {
+
     
         public interface IGenricRepository<T> where T : class
         {

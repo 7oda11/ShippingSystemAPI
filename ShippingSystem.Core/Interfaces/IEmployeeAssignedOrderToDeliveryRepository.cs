@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ShippingSystem.Core.Interfaces
 {
-    public interface IEmployeeAssignedOrderToDeliveryRepository: IGenricRepository<EmployeeAssignOrderToDelivery>
+    public interface IEmployeeAssignedOrderToDeliveryRepository : IGenericRepository<EmployeeAssignOrderToDelivery>
     {
     }
 }
