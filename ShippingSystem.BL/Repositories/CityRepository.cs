@@ -1,4 +1,5 @@
-﻿using ShippingSystem.Core.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,28 @@ namespace ShippingSystem.BL.Repositories
     {
          public CityRepository(ShippingContext context) : base(context)
         {
+
         }
+
+        public async Task<IEnumerable<City>> GetCitiesWithGovernmentsNameAsync()
+        {
+            return await context.Cities.Include(c => c.Government)
+                .ToListAsync();
+        }
+
+        public async Task<City> GetCityWithGovernmentByIdAsync(int id)
+        {
+            return await context.Cities
+                .Include(c => c.Government)
+                .FirstOrDefaultAsync(c => c.Id == id);
+        }
+
+        public async Task<City> GetCityWithName(string name)
+        {
+            return await context.Cities.Include(c => c.Government)
+             .FirstOrDefaultAsync(c => c.Name == name);
+        }
+
+       
     }
 }

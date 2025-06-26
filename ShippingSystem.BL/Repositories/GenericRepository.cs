@@ -22,31 +22,33 @@ namespace ShippingSystem.BL.Repositories
         }
 
 
-        public void Add(T entity)
+        public  async Task Add(T entity)
         {
-            _dbSet.Add(entity);
+             await  _dbSet.AddAsync(entity);
         }
 
-        public void Delete(T entity)
+        public  async Task Delete(T entity)
         {
             _dbSet.Remove(entity);
+            await context.SaveChangesAsync();
         }
 
-        public List<T> GetAll()
+        public async Task<List<T>> GetAll()
         {
-            return _dbSet.ToList();
+            return await _dbSet.ToListAsync();
         }
 
-        public T GetById(int id)
+        public async Task<T> GetById(int id)
         {
-            return _dbSet.Find(id);
+            return  await _dbSet.FindAsync(id);
         }
 
 
 
-        public void Update(T entity)
+        public async Task  Update(T entity)
         {
             context.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+             await context.SaveChangesAsync();
 
         }
     }
