@@ -1,4 +1,4 @@
-﻿using ShippingSystem.BL.Repositories;
+﻿//using ShippingSystem.BL.Repositories;
 using ShippingSystem.Core.Entities;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ShippingSystem.Core.Interfaces
 {
-    public interface IDeliveryManRepository:IGenricRepository<DeliveryMan>
+    public interface IDeliveryManRepository: IGenericRepository<DeliveryMan>
     {
     }
 }

@@ -1,8 +1,11 @@
-
 using Microsoft.EntityFrameworkCore;
 using ShippingSystem.API.Mapping;
 using ShippingSystem.Core.Entities;
+using ShippingSystem.Core.Interfaces;
+using ShippingSystem.BL.Repositories;
+using ShippingSystem.BL.Services;
 using System;
+using ShippingSystem.Core.Service;
 
 namespace ShippingSystem.API
 {
@@ -18,19 +21,26 @@ namespace ShippingSystem.API
                 op.AddPolicy("CORSPolicy", builder =>
                 {
                     builder.WithOrigins("http://localhost:4200")  // Your Angular app URL
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials();
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials();
                 });
             });
+
             builder.Services.AddDbContext<ShippingContext>(options =>
             {
                 options.UseLazyLoadingProxies().UseSqlServer(builder.Configuration.GetConnectionString("cs"));
             });
+
             #region // Registering Repositories and UnitOfWork
             builder.Services.AddScoped<ShippingContext>();
-            builder.Services.AddScoped<ShippingSystem.Core.Interfaces.IUnitOfWork, ShippingSystem.BL.Repositories.UnitOfWork>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddAutoMapper(typeof(MappConfig));
+            #endregion
+
+            #region // Registering Services
+            builder.Services.AddScoped<IShippingTypeService, ShippingTypeService>();
+            builder.Services.AddScoped<IWeightSettingService, WeightSettingService>();
             #endregion
 
             builder.Services.AddControllers();
@@ -49,7 +59,6 @@ namespace ShippingSystem.API
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

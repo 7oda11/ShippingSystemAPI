@@ -9,45 +9,40 @@ using System.Threading.Tasks;
 
 namespace ShippingSystem.BL.Repositories
 {
-    public class GenericRepository<T> : IGenricRepository<T> where T : class
+    public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        public ShippingContext context { get; }
+        protected readonly ShippingContext _context;
         private readonly DbSet<T> _dbSet;
 
-        public GenericRepository(ShippingContext ShippingContext)
+        public GenericRepository(ShippingContext context)
         {
-            this.context = ShippingContext;
+            _context = context;
             _dbSet = context.Set<T>();
-
         }
 
-
-        public void Add(T entity)
+        public async Task<List<T>> GetAllAsync()
         {
-            _dbSet.Add(entity);
+            return await _dbSet.ToListAsync();
+        }
+
+        public async Task<T> GetByIdAsync(int id)
+        {
+            return await _dbSet.FindAsync(id);
+        }
+
+        public async Task AddAsync(T entity)
+        {
+            await _dbSet.AddAsync(entity);
+        }
+
+        public void Update(T entity)
+        {
+            _context.Entry(entity).State = EntityState.Modified;
         }
 
         public void Delete(T entity)
         {
             _dbSet.Remove(entity);
-        }
-
-        public List<T> GetAll()
-        {
-            return _dbSet.ToList();
-        }
-
-        public T GetById(int id)
-        {
-            return _dbSet.Find(id);
-        }
-
-
-
-        public void Update(T entity)
-        {
-            context.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-
         }
     }
 }

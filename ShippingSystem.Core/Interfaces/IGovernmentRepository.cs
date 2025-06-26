@@ -1,4 +1,5 @@
-﻿using ShippingSystem.BL.Repositories;
+﻿//using ShippingSystem.BL.Repositories;
+using ShippingSystem.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ShippingSystem.Core.Interfaces
 {
-    public interface IGovernmentRepository: IGenricRepository<ShippingSystem.Core.Entities.Government>
+    public interface IGovernmentRepository: IGenericRepository<Government>
     {
     }
 }

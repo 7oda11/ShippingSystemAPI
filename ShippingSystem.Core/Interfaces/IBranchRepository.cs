@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ShippingSystem.Core.Interfaces
 {
-    public interface IBranchRepository: IGenricRepository<Branch>
+    public interface IBranchRepository: IGenericRepository<Branch>
     {
 
     }
