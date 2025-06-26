@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 
 namespace ShippingSystem.BL.Repositories
 {
-    public class GovernmentRepository: GenericRepository<Core.Entities.Government>, Core.Interfaces.IGovernmentRepository
+    public class GovernmentRepository : GenericRepository<Core.Entities.Government>, Core.Interfaces.IGovernmentRepository
     {
         public GovernmentRepository(ShippingContext context) : base(context)
         {
         }
+    }
 }

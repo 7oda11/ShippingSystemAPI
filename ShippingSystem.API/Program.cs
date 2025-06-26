@@ -1,4 +1,5 @@
 
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +35,7 @@ namespace ShippingSystem.API
                 options.UseLazyLoadingProxies().UseSqlServer(builder.Configuration.GetConnectionString("cs"));
             });
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+
      .AddEntityFrameworkStores<ShippingContext>()
      .AddDefaultTokenProviders();
 
