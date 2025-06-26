@@ -6,8 +6,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 using ShippingSystem.API.Mapping;
+using ShippingSystem.BL.Repositories;
 using ShippingSystem.Core.Entities;
-using ShippingSystem.Core.SeedData;
+using ShippingSystem.Core.Interfaces;
+
 using System;
 using System.Text;
 
@@ -72,12 +74,14 @@ namespace ShippingSystem.API
                 };
             });
             builder.Services.AddControllers();
+            builder.Services.AddScoped<IStatusRepository, StatusRepository>();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
             
 
 
             var app = builder.Build();
+
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

@@ -1,4 +1,6 @@
-﻿using ShippingSystem.Core.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using ShippingSystem.Core.Entities;
+using ShippingSystem.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +13,36 @@ namespace ShippingSystem.BL.Repositories
     {
         public StatusRepository(ShippingContext context) : base(context)
         { }
+
+
+        public async Task<IEnumerable<Status>> GetAllAsync()
+        {
+            return await context.Statuses.ToListAsync();
+        }
+
+        public async Task<Status> GetByIdAsync(int id)
+        {
+            return await context.Statuses.FindAsync(id);
+        }
+
+        public async Task<Status> AddAsync(Status status)
+        {
+            context.Statuses.Add(status);
+            await context.SaveChangesAsync();
+            return status;
+        }
+
+        public async Task UpdateAsync(Status status)
+        {
+            context.Entry(status).State = EntityState.Modified;
+            await context.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(Status status)
+        {
+            context.Statuses.Remove(status);
+            await context.SaveChangesAsync();
+        }
+
     }
 }

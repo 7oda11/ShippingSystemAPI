@@ -1,4 +1,5 @@
 
+
 ﻿using ShippingSystem.Core.Entities;
 
 using System;
