@@ -11,5 +11,5 @@ namespace ShippingSystem.BL.Repositories
     {
         public GovernmentRepository(ShippingContext context) : base(context)
         {
-        }
+        }}
 }

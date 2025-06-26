@@ -1,7 +1,9 @@
 
 using Microsoft.EntityFrameworkCore;
 using ShippingSystem.API.Mapping;
+using ShippingSystem.BL.Repositories;
 using ShippingSystem.Core.Entities;
+using ShippingSystem.Core.Interfaces;
 using System;
 
 namespace ShippingSystem.API
@@ -34,10 +36,12 @@ namespace ShippingSystem.API
             #endregion
 
             builder.Services.AddControllers();
+            builder.Services.AddScoped<IStatusRepository, StatusRepository>();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
             var app = builder.Build();
+
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
