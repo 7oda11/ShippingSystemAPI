@@ -1,5 +1,6 @@
-﻿//using ShippingSystem.BL.Repositories;
+
 using System;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,7 +25,7 @@ namespace ShippingSystem.Core.Interfaces
         IVendorPhonesRepository VendorPhonesRepository { get; }
         IVendorRepository VendorRepository { get; }
 
-        void Save();
+        //void Save();
         Task SaveAsync(); // Optional if you support async operationsW
 
 

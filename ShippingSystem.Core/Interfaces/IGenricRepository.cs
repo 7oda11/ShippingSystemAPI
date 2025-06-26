@@ -9,13 +9,15 @@ namespace ShippingSystem.Core.Interfaces
     
         public interface IGenricRepository<T> where T : class
         {
-            public List<T> GetAll();
-            //public T Get(int id);
-            public T GetById(int id);
-            public void Add(T entity);
-            public void Update(T entity);
 
-            public void Delete(T entity);
+           Task<List<T>> GetAll();
+            //public T Get(int id);
+             Task <T> GetById(int id);
+            Task Add(T entity);
+            Task Update(T entity);
+
+            Task Delete(T entity);
+
         }
     
 }
