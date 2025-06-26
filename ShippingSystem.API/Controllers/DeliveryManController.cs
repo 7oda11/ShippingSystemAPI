@@ -5,6 +5,7 @@ using ShippingSystem.Core.DTO;
 using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.Interfaces;
 using ShippingSystem.Core.Migrations;
+using System.Threading.Tasks;
 
 namespace ShippingSystem.API.Controllers
 {
@@ -45,8 +46,8 @@ namespace ShippingSystem.API.Controllers
                     Email = model.Email,
                     CityID = model.CityId
                 };
-                _unitOfWork.DeliveryManRepository.Add(deliveryMan);
-                _unitOfWork.Save();
+               await _unitOfWork.DeliveryManRepository.Add(deliveryMan);
+              await  _unitOfWork.SaveAsync();
 
                 return Ok("DeliveryMan Created");
             }
@@ -56,11 +57,11 @@ namespace ShippingSystem.API.Controllers
             }
         }
         [HttpPut]
-        public IActionResult Update(UpdateDeliveryManDTO vm)
+        public async Task<IActionResult> Update(UpdateDeliveryManDTO vm)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var dm = _unitOfWork.DeliveryManRepository.GetById(vm.Id);
+            var dm =await  _unitOfWork.DeliveryManRepository.GetById(vm.Id);
             if (dm == null) return NotFound();
 
             // Update DeliveryMan fields
@@ -77,38 +78,51 @@ namespace ShippingSystem.API.Controllers
                 dm.User.UserName = vm.Email; // if using email as username
             }
 
-            _unitOfWork.DeliveryManRepository.Update(dm);
-            _unitOfWork.Save();
+          await  _unitOfWork.DeliveryManRepository.Update(dm);
+          await  _unitOfWork.SaveAsync();
 
             return Ok();
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var result = _unitOfWork.DeliveryManRepository.GetAll().Select(d => new DeliveryManDTO
+            var data = await _unitOfWork.DeliveryManRepository
+                .GetAll(); // Fetch the data first
+
+            var deliveryMenWithCities = data
+                .Select(d => new
+                {
+                    DeliveryMan = d,
+                    City = _unitOfWork.CityRepository.GetById(d.CityID).Result // Fetch related City data
+                })
+                .ToList();
+
+            var result = deliveryMenWithCities.Select(d => new DeliveryManDTO
             {
-                Id = d.Id,
-                Name = d.Name,
-                Email = d.Email,
-                Phone = d.Phone,
+                Id = d.DeliveryMan.Id,
+                Name = d.DeliveryMan.Name,
+                Email = d.DeliveryMan.Email,
+                Phone = d.DeliveryMan.Phone,
                 CityName = d.City?.Name
             }).ToList();
+
             return Ok(result);
         }
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var d = _unitOfWork.DeliveryManRepository.GetById(id);
+            var d =await _unitOfWork.DeliveryManRepository.GetById(id);
             if (d == null) return NotFound();
 
             // Load the ApplicationUser (if not already included)
             var user = await _userManager.FindByIdAsync(d.UserId);
             if (user == null) return NotFound("Associated user not found.");
 
-            _unitOfWork.DeliveryManRepository.Delete(d);
-            _unitOfWork.Save();
+          await  _unitOfWork.DeliveryManRepository.Delete(d);
+          await  _unitOfWork.SaveAsync();
 
             var result = await _userManager.DeleteAsync(user);
             if (!result.Succeeded) return BadRequest(result.Errors);
@@ -117,9 +131,9 @@ namespace ShippingSystem.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            var dm = _unitOfWork.DeliveryManRepository.GetById(id);
+            var dm =await _unitOfWork.DeliveryManRepository.GetById(id);
             if (dm == null) return NotFound();
             var result = new DeliveryManDTO
             {

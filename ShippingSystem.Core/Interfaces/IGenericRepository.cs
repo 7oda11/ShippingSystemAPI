@@ -8,7 +8,7 @@ namespace ShippingSystem.Core.Interfaces
 {
 
     
-        public interface IGenricRepository<T> where T : class
+        public interface IGenericRepository<T> where T : class
         {
 
            Task<List<T>> GetAll();

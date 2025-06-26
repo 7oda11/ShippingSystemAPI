@@ -11,9 +11,11 @@ namespace ShippingSystem.BL.Repositories
 {
     public class CityRepository:GenericRepository<City>, ICityRepository
     {
-         public CityRepository(ShippingContext context) : base(context)
-        {
+        private readonly ShippingContext context;
 
+        public CityRepository(ShippingContext context) : base(context)
+        {
+            this.context = context;
         }
 
         public async Task<IEnumerable<City>> GetCitiesWithGovernmentsNameAsync()

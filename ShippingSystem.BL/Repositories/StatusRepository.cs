@@ -11,8 +11,12 @@ namespace ShippingSystem.BL.Repositories
 {
     public class StatusRepository: GenericRepository<Core.Entities.Status>, Core.Interfaces.IStatusRepository
     {
+        private readonly ShippingContext context;
+
         public StatusRepository(ShippingContext context) : base(context)
-        { }
+        {
+            this.context = context;
+        }
 
 
         public async Task<IEnumerable<Status>> GetAllAsync()

@@ -24,7 +24,7 @@ namespace ShippingSystem.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var list = await _unitOfWork.WeightSettingRepository.GetAllAsync();
+            var list = await _unitOfWork.WeightSettingRepository.GetAll();
             var result = _mapper.Map<List<WeightSettingDTO>>(list);
             return Ok(result);
         }
@@ -32,7 +32,7 @@ namespace ShippingSystem.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var setting = await _unitOfWork.WeightSettingRepository.GetByIdAsync(id);
+            var setting = await _unitOfWork.WeightSettingRepository.GetById(id);
             if (setting == null) return NotFound();
             return Ok(_mapper.Map<WeightSettingDTO>(setting));
         }
@@ -41,7 +41,7 @@ namespace ShippingSystem.API.Controllers
         public async Task<IActionResult> Create([FromBody] WeightSettingDTO dto)
         {
             var entity = _mapper.Map<WeightSetting>(dto);
-            await _unitOfWork.WeightSettingRepository.AddAsync(entity);
+            await _unitOfWork.WeightSettingRepository.Add(entity);
             await _unitOfWork.SaveAsync();
             return Ok(_mapper.Map<WeightSettingDTO>(entity));
         }
@@ -49,7 +49,7 @@ namespace ShippingSystem.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] WeightSettingDTO dto)
         {
-            var entity = await _unitOfWork.WeightSettingRepository.GetByIdAsync(id);
+            var entity = await _unitOfWork.WeightSettingRepository.GetById(id);
             if (entity == null) return NotFound();
 
             entity.WeightRange = dto.WeightRange;
@@ -63,7 +63,7 @@ namespace ShippingSystem.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var entity = await _unitOfWork.WeightSettingRepository.GetByIdAsync(id);
+            var entity = await _unitOfWork.WeightSettingRepository.GetById(id);
             if (entity == null) return NotFound();
 
             _unitOfWork.WeightSettingRepository.Delete(entity);

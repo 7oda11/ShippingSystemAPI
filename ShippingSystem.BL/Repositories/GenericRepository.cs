@@ -32,7 +32,7 @@ namespace ShippingSystem.BL.Repositories
 
         {
             _dbSet.Remove(entity);
-            await context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
         public async Task<List<T>> GetAll()
@@ -53,10 +53,10 @@ namespace ShippingSystem.BL.Repositories
         public async Task  Update(T entity)
 
         {
-            context.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-             await context.SaveChangesAsync();
+            _context.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+             await _context.SaveChangesAsync();
 
-            await context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
         }
     }

@@ -5,6 +5,7 @@ using ShippingSystem.Core.DTO;
 using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.Interfaces;
 using ShippingSystem.Core.Migrations;
+using System.Threading.Tasks;
 
 namespace ShippingSystem.API.Controllers
 {
@@ -37,8 +38,8 @@ namespace ShippingSystem.API.Controllers
                 await _userManager.AddToRoleAsync(user, "Employee");
 
                 var employee = new Employee { UserId = user.Id, BranchId = model.BranchId };
-                _unitOfWork.EmployeeRepository.Add(employee);
-                _unitOfWork.Save();
+              await  _unitOfWork.EmployeeRepository.Add(employee);
+             await   _unitOfWork.SaveAsync();
 
                 return Ok("Employee Created");
             }
@@ -48,11 +49,11 @@ namespace ShippingSystem.API.Controllers
             }
         }
         [HttpPut]
-        public IActionResult Update(UpdateEmployeeDTO vm)
+        public async Task<IActionResult> Update(UpdateEmployeeDTO vm)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var employee = _unitOfWork.EmployeeRepository.GetById(vm.Id);
+            var employee =await _unitOfWork.EmployeeRepository.GetById(vm.Id);
             if (employee == null) return NotFound();
 
             employee.BranchId = vm.BranchId;
@@ -64,23 +65,25 @@ namespace ShippingSystem.API.Controllers
                 employee.User.UserName = vm.Email;
             }
 
-            _unitOfWork.EmployeeRepository.Update(employee);
-            _unitOfWork.Save();
+         await   _unitOfWork.EmployeeRepository.Update(employee);
+            await _unitOfWork.SaveAsync();
 
             return Ok();
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var result = _unitOfWork.EmployeeRepository.GetAll().Select(e => new EmployeeDTO
+            var employees = await _unitOfWork.EmployeeRepository.GetAll();
+            var result = employees.Select(e => new EmployeeDTO
             {
                 Id = e.Id,
                 FullName = e.User.FullName,
                 Email = e.User.Email,
                 BranchName = e.Branch?.Name
             }).ToList();
-            if (result == null)
+
+            if (result == null || !result.Any())
             {
                 return BadRequest("Employees not found");
             }
@@ -89,14 +92,14 @@ namespace ShippingSystem.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var emp = _unitOfWork.EmployeeRepository.GetById(id);
+            var emp = await _unitOfWork.EmployeeRepository.GetById(id);
             if (emp == null) return NotFound();
 
             var user = await _userManager.FindByIdAsync(emp.UserId);
             if (user == null) return NotFound("Associated user not found.");
 
-            _unitOfWork.EmployeeRepository.Delete(emp);
-            _unitOfWork.Save();
+           await _unitOfWork.EmployeeRepository.Delete(emp);
+           await _unitOfWork.SaveAsync();
 
             var result = await _userManager.DeleteAsync(user);
             if (!result.Succeeded) return BadRequest(result.Errors);
@@ -105,9 +108,9 @@ namespace ShippingSystem.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            var emp = _unitOfWork.EmployeeRepository.GetById(id);
+            var emp =await _unitOfWork.EmployeeRepository.GetById(id);
             if (emp == null) return NotFound();
             var result = new EmployeeDTO
             {

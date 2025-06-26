@@ -16,9 +16,11 @@ namespace ShippingSystem.BL.Repositories
 
 
     {
+        private readonly ShippingContext context;
+
         public GovernmentRepository(ShippingContext context) : base(context)
         {
-
+            this.context = context;
         }
 
 

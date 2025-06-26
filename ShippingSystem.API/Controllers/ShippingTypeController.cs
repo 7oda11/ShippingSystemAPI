@@ -24,7 +24,7 @@ namespace ShippingSystem.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var types = await _unitOfWork.ShippingTypeRepository.GetAllAsync();
+            var types = await _unitOfWork.ShippingTypeRepository.GetAll();
             var result = _mapper.Map<List<ShippingTypeDTO>>(types);
             return Ok(result);
         }
@@ -32,7 +32,7 @@ namespace ShippingSystem.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var type = await _unitOfWork.ShippingTypeRepository.GetByIdAsync(id);
+            var type = await _unitOfWork.ShippingTypeRepository.GetById(id);
             if (type == null) return NotFound();
             return Ok(_mapper.Map<ShippingTypeDTO>(type));
         }
@@ -41,7 +41,7 @@ namespace ShippingSystem.API.Controllers
         public async Task<IActionResult> Create([FromBody] ShippingTypeDTO dto)
         {
             var entity = _mapper.Map<ShippingType>(dto);
-            await _unitOfWork.ShippingTypeRepository.AddAsync(entity);
+            await _unitOfWork.ShippingTypeRepository.Add(entity);
             await _unitOfWork.SaveAsync();
             return Ok(_mapper.Map<ShippingTypeDTO>(entity));
         }
@@ -49,7 +49,7 @@ namespace ShippingSystem.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] ShippingTypeDTO dto)
         {
-            var entity = await _unitOfWork.ShippingTypeRepository.GetByIdAsync(id);
+            var entity = await _unitOfWork.ShippingTypeRepository.GetById(id);
             if (entity == null) return NotFound();
 
             entity.ShippingTypeName = dto.ShippingTypeName;
@@ -64,7 +64,7 @@ namespace ShippingSystem.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var entity = await _unitOfWork.ShippingTypeRepository.GetByIdAsync(id);
+            var entity = await _unitOfWork.ShippingTypeRepository.GetById(id);
             if (entity == null) return NotFound();
 
             _unitOfWork.ShippingTypeRepository.Delete(entity);

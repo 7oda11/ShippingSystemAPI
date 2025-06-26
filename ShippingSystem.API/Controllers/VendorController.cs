@@ -5,6 +5,7 @@ using ShippingSystem.Core.DTO;
 using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.Interfaces;
 using ShippingSystem.Core.Migrations;
+using System.Threading.Tasks;
 
 namespace ShippingSystem.API.Controllers
 {
@@ -44,8 +45,8 @@ namespace ShippingSystem.API.Controllers
                     Address = model.Address,
                     Email = model.Email
                 };
-                _unitOfWork.VendorRepository.Add(vendor);
-                _unitOfWork.Save();
+              await  _unitOfWork.VendorRepository.Add(vendor);
+              await  _unitOfWork.SaveAsync();
 
                 return Ok("Vendor Created");
             }
@@ -55,11 +56,11 @@ namespace ShippingSystem.API.Controllers
             }
         }
         [HttpPut]
-        public IActionResult Update(UpdateVendorDTO vm)
+        public async Task< IActionResult> Update(UpdateVendorDTO vm)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var vendor = _unitOfWork.VendorRepository.GetById(vm.Id);
+            var vendor = await _unitOfWork.VendorRepository.GetById(vm.Id);
             if (vendor == null) return NotFound();
 
             vendor.Name = vm.Name;
@@ -74,15 +75,16 @@ namespace ShippingSystem.API.Controllers
                 vendor.User.UserName = vm.Email;
             }
 
-            _unitOfWork.VendorRepository.Update(vendor);
-            _unitOfWork.Save();
+           await _unitOfWork.VendorRepository.Update(vendor);
+           await _unitOfWork.SaveAsync();
 
             return Ok();
         }
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var result = _unitOfWork.VendorRepository.GetAll().Select(v => new VendorDTO
+            var vendors = await _unitOfWork.VendorRepository.GetAll(); // Await the Task to get the result
+            var result = vendors.Select(v => new VendorDTO
             {
                 Id = v.Id,
                 Name = v.Name,
@@ -94,15 +96,15 @@ namespace ShippingSystem.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var vendor = _unitOfWork.VendorRepository.GetById(id);
+            var vendor = await _unitOfWork.VendorRepository.GetById(id);
             if (vendor == null) return NotFound();
 
             // Load associated ApplicationUser
             var user = await _userManager.FindByIdAsync(vendor.UserId);
             if (user == null) return NotFound("Associated user not found.");
 
-            _unitOfWork.VendorRepository.Delete(vendor);
-            _unitOfWork.Save();
+          await  _unitOfWork.VendorRepository.Delete(vendor);
+          await  _unitOfWork.SaveAsync();
 
             var result = await _userManager.DeleteAsync(user);
             if (!result.Succeeded) return BadRequest(result.Errors);
@@ -111,9 +113,9 @@ namespace ShippingSystem.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            var vendor = _unitOfWork.VendorRepository.GetById(id);
+            var vendor =await _unitOfWork.VendorRepository.GetById(id);
             if (vendor == null) return NotFound();
             var result = new VendorDTO
             {

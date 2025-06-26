@@ -14,6 +14,7 @@ using ShippingSystem.BL.Repositories;
 
 using System;
 using System.Text;
+using ShippingSystem.Core.SeedData;
 
 namespace ShippingSystem.API
 {
