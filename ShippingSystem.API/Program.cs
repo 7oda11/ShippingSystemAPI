@@ -1,4 +1,5 @@
 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ShippingSystem.API.Mapping;
 using ShippingSystem.Core.Entities;
@@ -27,6 +28,10 @@ namespace ShippingSystem.API
             {
                 options.UseLazyLoadingProxies().UseSqlServer(builder.Configuration.GetConnectionString("cs"));
             });
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<ShippingContext>()
+    .AddDefaultTokenProviders();
+
             #region // Registering Repositories and UnitOfWork
             builder.Services.AddScoped<ShippingContext>();
             builder.Services.AddScoped<ShippingSystem.Core.Interfaces.IUnitOfWork, ShippingSystem.BL.Repositories.UnitOfWork>();
