@@ -30,6 +30,7 @@ namespace ShippingSystem.API
             .AllowCredentials();
                 });
             });
+
             builder.Services.AddDbContext<ShippingContext>(options =>
             {
                 options.UseLazyLoadingProxies().UseSqlServer(builder.Configuration.GetConnectionString("cs"));
@@ -73,6 +74,8 @@ namespace ShippingSystem.API
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+            
+
 
             var app = builder.Build();
 

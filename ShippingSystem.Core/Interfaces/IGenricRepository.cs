@@ -9,6 +9,7 @@ namespace ShippingSystem.Core.Interfaces
     
         public interface IGenricRepository<T> where T : class
         {
+
            Task<List<T>> GetAll();
             //public T Get(int id);
              Task <T> GetById(int id);
@@ -16,6 +17,7 @@ namespace ShippingSystem.Core.Interfaces
             Task Update(T entity);
 
             Task Delete(T entity);
+
         }
     
 }

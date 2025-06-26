@@ -10,12 +10,16 @@ using System.Threading.Tasks;
 namespace ShippingSystem.BL.Repositories
 {
 
+
     public class GovernmentRepository : GenericRepository<Government>, IGovernmentRepository
+
 
     {
         public GovernmentRepository(ShippingContext context) : base(context)
         {
         }
+
+
 
 
         public async Task<IEnumerable<Government>> GetGovernmentsWithCitiesAsync()
@@ -40,6 +44,7 @@ namespace ShippingSystem.BL.Repositories
 
       
      
+
 
     }
 }

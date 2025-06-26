@@ -1,4 +1,5 @@
-﻿using ShippingSystem.Core.Entities;
+﻿using AutoMapper;
+using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.Interfaces;
 using System;
 
@@ -7,6 +8,7 @@ namespace ShippingSystem.BL.Repositories
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ShippingContext _context;
+        private readonly IMapper _mapper;
 
         private IBranchRepository _branchRepository;
         private ICityRepository _cityRepository;
@@ -23,13 +25,14 @@ namespace ShippingSystem.BL.Repositories
         private IVendorPhonesRepository _vendorPhonesRepository;
         private IVendorRepository _vendorRepository;
 
-        public UnitOfWork(ShippingContext context)
+        public UnitOfWork(ShippingContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public IBranchRepository BranchRepository =>
-            _branchRepository ??= new BranchRepository(_context);
+            _branchRepository ??= new BranchRepository(_context,_mapper);
 
         public ICityRepository CityRepository =>
             _cityRepository ??= new CityRepository(_context);
