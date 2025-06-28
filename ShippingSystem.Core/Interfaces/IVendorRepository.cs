@@ -9,5 +9,7 @@ namespace ShippingSystem.Core.Interfaces
 {
     public interface IVendorRepository: IGenericRepository<Vendor>
     {
+        Task<Vendor> FindByUserIdAsync(string userId);
+
     }
 }

@@ -50,6 +50,9 @@ namespace ShippingSystem.API
             builder.Services.AddScoped<ShippingContext>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddAutoMapper(typeof(MappConfig));
+            builder.Services.AddScoped<IVendorRepository, VendorRepository>();
+            builder.Services.AddScoped<IDeliveryManRepository, DeliveryManRepository>();
+
             #endregion
 
             var jwtSettings = builder.Configuration.GetSection("Jwt");
