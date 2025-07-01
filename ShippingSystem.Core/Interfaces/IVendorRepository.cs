@@ -1,4 +1,6 @@
-﻿using ShippingSystem.Core.Entities;
+﻿using Microsoft.AspNetCore.Mvc;
+using ShippingSystem.Core.DTO.Vendor;
+using ShippingSystem.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +11,6 @@ namespace ShippingSystem.Core.Interfaces
 {
     public interface IVendorRepository: IGenericRepository<Vendor>
     {
+        Task<bool> AddNewVendor(AddVendorDTO vdto);
     }
 }

@@ -1,4 +1,8 @@
-﻿using ShippingSystem.Core.Entities;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using ShippingSystem.Core.DTO.Vendor;
+using ShippingSystem.Core.Entities;
+using ShippingSystem.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +11,51 @@ using System.Threading.Tasks;
 
 namespace ShippingSystem.BL.Repositories
 {
-    public class VendorRepository: GenericRepository<Core.Entities.Vendor>, Core.Interfaces.IVendorRepository
+    public class VendorRepository: GenericRepository<Vendor>, IVendorRepository
     {
-        public VendorRepository(ShippingContext context) : base(context)
-        { }
+        private readonly UserManager<ApplicationUser> _userManager;
+        public readonly ShippingContext _context;
+
+        public VendorRepository(ShippingContext context, UserManager<ApplicationUser> userMAnager) : base(context)
+        {
+           _userManager = userMAnager;
+            this._context = context;
+           
+        }
+
+
+       public async  Task<bool> AddNewVendor(AddVendorDTO vdto)
+        {
+            if(vdto == null)
+            { return false; }
+
+            var user = new ApplicationUser
+            {
+                FullName = vdto.name,
+                UserName = vdto.email,
+                Email = vdto.email,
+                PhoneNumber = vdto.phone,
+
+            };
+            var result=  await _userManager.CreateAsync(user, vdto.password);
+            if (!result.Succeeded) { return false; }
+
+             var newVendor = new  Vendor{
+                 Name = vdto.name,
+                 Email = vdto.email,
+                 Address = vdto.address,
+                 UserId = user.Id,
+                 GovernmentId = vdto.GovernmentId,
+                 CityId = vdto.CityId,
+                 Phones = new List<VendorPhones>
+                 {
+                     new VendorPhones {Phone = vdto.phone}
+                 }
+                 
+            };
+            await _context.Vendors.AddAsync(newVendor);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

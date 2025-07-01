@@ -12,8 +12,8 @@ using ShippingSystem.Core.Entities;
 namespace ShippingSystem.Core.Migrations
 {
     [DbContext(typeof(ShippingContext))]
-    [Migration("20250624191514_v1")]
-    partial class v1
+    [Migration("20250701171129_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -271,9 +271,11 @@ namespace ShippingSystem.Core.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("PickedPrice")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -493,6 +495,7 @@ namespace ShippingSystem.Core.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<double>("Quantity")
@@ -517,6 +520,7 @@ namespace ShippingSystem.Core.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("ShippingPrice")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ShippingTypeName")
