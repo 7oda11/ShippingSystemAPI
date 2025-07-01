@@ -27,6 +27,12 @@ namespace ShippingSystem.Core.Entities
 
         public float CancelledOrderPercentage { get; set; }
 
+        public int? CityId { get; set; }
+        [ForeignKey("CityId")]
+        public virtual City City { get; set; }
+        public int? GovernmentId { get; set; }
+        [ForeignKey("GovernmentId")]
+        public virtual Government Government { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
         public virtual ICollection<VendorPhones> Phones { get; set; }
     }

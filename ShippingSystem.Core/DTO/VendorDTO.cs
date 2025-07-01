@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShippingSystem.Core.DTO
+namespace ShippingSystem.Core.DTO.Vendor
 {
     public class VendorDTO
     {

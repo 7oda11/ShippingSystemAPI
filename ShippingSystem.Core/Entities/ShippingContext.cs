@@ -36,7 +36,14 @@ namespace ShippingSystem.Core.Entities
 
 
 
-
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.Entity<City>().Property(c => c.PickedPrice).HasPrecision(18, 2);
+            builder.Entity<City>().Property(c => c.Price).HasPrecision(18,2);
+            builder.Entity<Product>().Property(p => p.Price).HasPrecision(18, 2);
+            builder.Entity<ShippingType>().Property(s=>s.ShippingPrice).HasPrecision(18, 2);
+        }
 
 
     }
