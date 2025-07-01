@@ -60,14 +60,27 @@ namespace ShippingSystem.API.Controllers
             {
                 return BadRequest("City data is null.");
             }
-            var city = map.Map<City>(cdto);
+            var existingGov = await work.GovernmentRepository.GetById(cdto.GovernmentId);
+                if(existingGov == null)
+            {
+                return NotFound("This government Not Found");
+            }
+            //var city = map.Map<City>(cdto);
+            var city = new City
+            {
+                Name = cdto.Name,
+                Price = cdto.Price,
+                PickedPrice = cdto.PickedPrice,
+                GovernmentId = cdto.GovernmentId
+            };
+            city.Government = existingGov;
             var addedCity =   work.CityRepository.Add(city);
             await  work.SaveAsync();
             var addedCityDTO = map.Map<CityDTO>(city);
             return Ok(addedCityDTO);
         }
 
-        [HttpPut("{id:int}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id  , CityDTO cdto)
         {
             var city =   await work.CityRepository.GetCityWithGovernmentByIdAsync(id);
@@ -89,7 +102,7 @@ namespace ShippingSystem.API.Controllers
             var updatedCityDTO = map.Map<CityDTO>(city);
             return Ok(updatedCityDTO);
         }
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id}")]
         public  async Task<IActionResult> Delete(int id)
         {
             var city = await work.CityRepository.GetCityWithGovernmentByIdAsync(id);
@@ -97,8 +110,8 @@ namespace ShippingSystem.API.Controllers
           
                 return NotFound($"City with id {id} not found.");
              await work.CityRepository.Delete(city);
-            await work.SaveAsync();
-            return Ok($"City with id {id} deleted successfully.");
+            //await work.SaveAsync();
+            return Ok( new  {message= "Deleted Successfully"} );
         }
 
     }

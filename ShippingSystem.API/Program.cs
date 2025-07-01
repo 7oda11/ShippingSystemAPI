@@ -29,10 +29,10 @@ namespace ShippingSystem.API
             {
                 op.AddPolicy("CORSPolicy", builder =>
                 {
-                    builder.WithOrigins("http://localhost:4200")  // Your Angular app URL
+                    builder.AllowAnyOrigin()  // Your Angular app URL
                         .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .AllowCredentials();
+                        .AllowAnyHeader();
+                      
                 });
             });
 
@@ -84,8 +84,8 @@ namespace ShippingSystem.API
             builder.Services.AddScoped<IStatusRepository, StatusRepository>();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
-            
 
+         
 
             var app = builder.Build();
 
@@ -106,12 +106,12 @@ namespace ShippingSystem.API
             }
 
             app.UseHttpsRedirection();
-
+            app.UseCors("CORSPolicy");
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
-
+           
             app.Run();
         }
     }

@@ -49,7 +49,7 @@ namespace ShippingSystem.API.Controllers
 
         }
         [HttpPost("Add-Branch")]
-        public async Task<IActionResult> CreateBranch( BranchDTO branchDTO)
+        public async Task<IActionResult> CreateBranch(BranchDTO branchDTO)
         {
             if (branchDTO == null)
             {
@@ -57,9 +57,10 @@ namespace ShippingSystem.API.Controllers
             }
             var branch = mapper.Map<Branch>(branchDTO);
             await _unitOfWork.BranchRepository.Add(branch);
+            //save changes
+            await _unitOfWork.SaveAsync();
             return CreatedAtAction(nameof(GetBranchById), new { id = branch.Id }, mapper.Map<BranchDTO>(branch));
         }
-
 
 
         [HttpPut("Update-Branch/{id}")]
@@ -69,17 +70,19 @@ namespace ShippingSystem.API.Controllers
             {
                 return BadRequest("Branch data is invalid.");
             }
+
             var existingBranch = await _unitOfWork.BranchRepository.GetById(id);
             if (existingBranch == null)
             {
                 return NotFound($"Branch with ID {id} not found.");
             }
 
-            // Map the updated data to the existing branch
             mapper.Map(branchDTO, existingBranch);
             _unitOfWork.BranchRepository.Update(existingBranch);
-            return NoContent();
+            await _unitOfWork.SaveAsync();
+            return Ok(mapper.Map<BranchDTO>(existingBranch)); // ✅
         }
+
 
 
         [HttpDelete("Delete-Branch/{id}")]
