@@ -80,6 +80,20 @@ namespace ShippingSystem.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ShippingType",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ShippingTypeName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ShippingPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShippingType", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Statuses",
                 columns: table => new
                 {
@@ -189,7 +203,7 @@ namespace ShippingSystem.Core.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);   
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -252,7 +266,7 @@ namespace ShippingSystem.Core.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Employees_Branches_BranchId",
                         column: x => x.BranchId,
@@ -268,8 +282,8 @@ namespace ShippingSystem.Core.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PickedPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    PickedPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     GovernmentId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -347,11 +361,10 @@ namespace ShippingSystem.Core.Migrations
                     OrderType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PaymentType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    VendorId = table.Column<int>(type: "int", nullable: false),
+                    VendorId = table.Column<int>(type: "int", nullable: true),
                     StatusId = table.Column<int>(type: "int", nullable: false),
-                    CityId = table.Column<int>(type: "int", nullable: true),
-                    ShippingTypeName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ShippingPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    CityId = table.Column<int>(type: "int", nullable: false),
+                    ShippingTypeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -360,7 +373,14 @@ namespace ShippingSystem.Core.Migrations
                         name: "FK_Orders_Cities_CityId",
                         column: x => x.CityId,
                         principalTable: "Cities",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
+                        name: "FK_Orders_ShippingType_ShippingTypeId",
+                        column: x => x.ShippingTypeId,
+                        principalTable: "ShippingType",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Orders_Statuses_StatusId",
                         column: x => x.StatusId,
@@ -371,8 +391,7 @@ namespace ShippingSystem.Core.Migrations
                         name: "FK_Orders_Vendors_VendorId",
                         column: x => x.VendorId,
                         principalTable: "Vendors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -437,6 +456,7 @@ namespace ShippingSystem.Core.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Quantity = table.Column<double>(type: "float", nullable: false),
                     Weight = table.Column<double>(type: "float", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     OrderId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -542,6 +562,11 @@ namespace ShippingSystem.Core.Migrations
                 column: "CityId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Orders_ShippingTypeId",
+                table: "Orders",
+                column: "ShippingTypeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Orders_StatusId",
                 table: "Orders",
                 column: "StatusId");
@@ -618,6 +643,9 @@ namespace ShippingSystem.Core.Migrations
 
             migrationBuilder.DropTable(
                 name: "Cities");
+
+            migrationBuilder.DropTable(
+                name: "ShippingType");
 
             migrationBuilder.DropTable(
                 name: "Statuses");

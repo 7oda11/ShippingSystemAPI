@@ -30,6 +30,18 @@ namespace ShippingSystem.API.Controllers
 
             return Ok(allGovernmentsDTO);
         }
+
+        [HttpGet("Gov-Names")]
+        public async Task<IActionResult> GetGovernmentsName()
+        {
+            var governments= await work.GovernmentRepository.GetAll();
+            var result = governments.Select(g=>new GovernmentNameDTO
+            {
+                Id = g.Id,
+                Name = g.Name
+            }).ToList();
+            return Ok(result);
+        }
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -77,7 +89,7 @@ namespace ShippingSystem.API.Controllers
             return Ok(updatedGovernmentDTO);
 
         }
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var gov = await work.GovernmentRepository.GetGovernmentWithCitiesByIdAsync(id);
@@ -85,8 +97,9 @@ namespace ShippingSystem.API.Controllers
                 return NotFound($"This Government with {id} is Not Found");
             await work.GovernmentRepository?.Delete(gov);
             await work.SaveAsync();
-            return Ok("Deleted Successfully");
+            return Ok(new {message= "Deleted Successfully" });
         }
+
 
     }
 }

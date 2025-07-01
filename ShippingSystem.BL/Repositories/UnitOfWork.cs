@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.Interfaces;
 using System;
@@ -9,7 +10,7 @@ namespace ShippingSystem.BL.Repositories
     {
         private readonly ShippingContext _context;
         private readonly IMapper _mapper;
-
+        private readonly UserManager<ApplicationUser> userManager;
         private IBranchRepository _branchRepository;
         private ICityRepository _cityRepository;
         private IDeliveryManRepository _deliveryManRepository;
@@ -25,10 +26,11 @@ namespace ShippingSystem.BL.Repositories
         private IVendorPhonesRepository _vendorPhonesRepository;
         private IVendorRepository _vendorRepository;
 
-        public UnitOfWork(ShippingContext context, IMapper mapper)
+        public UnitOfWork(ShippingContext context, IMapper mapper , UserManager<ApplicationUser> _userManager)
         {
             _context = context;
             _mapper = mapper;
+           this. userManager = _userManager;
         }
 
         public IBranchRepository BranchRepository =>
@@ -71,7 +73,7 @@ namespace ShippingSystem.BL.Repositories
             _vendorPhonesRepository ??= new VendorPhonesRepository(_context);
 
         public IVendorRepository VendorRepository =>
-            _vendorRepository ??= new VendorRepository(_context);
+            _vendorRepository ??= new VendorRepository(_context, userManager);
 
         public void Save()
         {

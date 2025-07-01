@@ -4,13 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ShippingSystem.Core.DTO.Vendor
+namespace ShippingSystem.Core.DTO.Government
 {
-    public class VendorDTO
+    public class GovernmentNameDTO
     {
         public int Id { get; set; }
+
         public string Name { get; set; }
-        public string Email { get; set; }
-        public string Address { get; set; }
     }
 }

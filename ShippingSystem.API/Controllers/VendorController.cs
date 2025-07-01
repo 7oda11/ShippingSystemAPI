@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ShippingSystem.Core.DTO;
+using ShippingSystem.Core.DTO.Vendor;
 using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.Interfaces;
-using ShippingSystem.Core.Migrations;
-using System.Threading.Tasks;
 
 namespace ShippingSystem.API.Controllers
 {
@@ -90,6 +88,7 @@ namespace ShippingSystem.API.Controllers
                 Name = v.Name,
                 Email = v.Email,
                 Address = v.Address
+                
             }).ToList();
             return Ok(result);
         }
@@ -125,6 +124,13 @@ namespace ShippingSystem.API.Controllers
                 Address = vendor.Address
             };
             return Ok(result);
+        }
+        [HttpPost("add-new-vendor-with-details")]
+        public async  Task<IActionResult> addVendorDetails(AddVendorDTO vdto)
+        {
+            if (vdto == null) return BadRequest("Invalid Data");
+            await  _unitOfWork.VendorRepository.AddNewVendor(vdto);
+            return Ok(vdto);
         }
 
     }
