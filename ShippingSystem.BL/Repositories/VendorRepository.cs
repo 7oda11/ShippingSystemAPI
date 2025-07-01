@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using ShippingSystem.Core.DTO.Vendor;
 using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.Interfaces;
+
+﻿using Microsoft.EntityFrameworkCore;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,5 +60,14 @@ namespace ShippingSystem.BL.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+       
+        public async Task<Vendor> FindByUserIdAsync(string userId)
+        {
+            return await _context.Vendors
+                .Include(v => v.User)
+                .FirstOrDefaultAsync(v => v.UserId == userId);
+        }
+
     }
 }

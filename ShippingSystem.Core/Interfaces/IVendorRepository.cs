@@ -12,5 +12,8 @@ namespace ShippingSystem.Core.Interfaces
     public interface IVendorRepository: IGenericRepository<Vendor>
     {
         Task<bool> AddNewVendor(AddVendorDTO vdto);
+
+        Task<Vendor> FindByUserIdAsync(string userId);
+
     }
 }
