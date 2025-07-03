@@ -130,11 +130,14 @@ namespace ShippingSystem.API.Controllers
             };
             return Ok(result);
         }
+
+
         [HttpPost("add-new-vendor-with-details")]
         public async  Task<IActionResult> addVendorDetails(AddVendorDTO vdto)
         {
             if (vdto == null) return BadRequest("Invalid Data");
-            await _unitOfWork.VendorRepository.AddNewVendor(vdto);
+           var newVendor = await _unitOfWork.VendorRepository.AddNewVendor(vdto);
+            if (!newVendor) return BadRequest("Failed To Add  Vendor");
             return Ok(vdto);
         }
 

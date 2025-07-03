@@ -40,8 +40,12 @@ namespace ShippingSystem.BL.Repositories
                 PhoneNumber = vdto.phone,
 
             };
+
+            var roleResult = await _userManager.AddToRoleAsync(user, "Vendor");
+            if(!roleResult.Succeeded) { return false; }
             var result=  await _userManager.CreateAsync(user, vdto.password);
             if (!result.Succeeded) { return false; }
+
 
              var newVendor = new  Vendor{
                  Name = vdto.name,
