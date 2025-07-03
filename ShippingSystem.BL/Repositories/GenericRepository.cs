@@ -56,7 +56,7 @@ namespace ShippingSystem.BL.Repositories
             _context.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
              await _context.SaveChangesAsync();
 
-            await _context.SaveChangesAsync();
+         
 
         }
     }

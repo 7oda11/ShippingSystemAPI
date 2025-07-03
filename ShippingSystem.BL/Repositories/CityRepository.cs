@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ShippingSystem.Core.DTO.City;
 using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.Interfaces;
 using System;
@@ -18,10 +19,20 @@ namespace ShippingSystem.BL.Repositories
             this.context = context;
         }
 
+        public async Task<IEnumerable<CityNameDTO>> GetAllCitiesWithGovId(int govId)
+        {
+          return await _context.Cities.Where(c=>c.GovernmentId == govId)
+                .Select(c=> new CityNameDTO
+                {
+                    Name = c.Name,
+                    Id = c.Id
+                })
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<City>> GetCitiesWithGovernmentsNameAsync()
         {
-            return await context.Cities.Include(c => c.Government)
-                .ToListAsync();
+          return await _context.Cities.Include(c=>c.Government).ToListAsync();
         }
 
         public async Task<City> GetCityWithGovernmentByIdAsync(int id)
@@ -37,6 +48,9 @@ namespace ShippingSystem.BL.Repositories
              .FirstOrDefaultAsync(c => c.Name == name);
         }
 
-       
+      
+ 
+        
+            
     }
 }
