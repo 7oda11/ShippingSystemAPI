@@ -12,5 +12,6 @@ namespace ShippingSystem.Core.Interfaces
 {
     public interface IEmployeeRepository:IGenericRepository<Employee>
     {
+       
     }
 }
