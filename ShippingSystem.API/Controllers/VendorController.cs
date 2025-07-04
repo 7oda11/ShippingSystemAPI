@@ -97,16 +97,33 @@ namespace ShippingSystem.API.Controllers
         {
             var vendor = await _unitOfWork.VendorRepository.GetById(id);
             if (vendor == null) return NotFound();
+
+            bool hasOrders = await _unitOfWork.OrderRepository.HasOrdersForVendorAsync(vendor.Id);
+            if (hasOrders)
+            {
+                return BadRequest("Can not Delete Vendors with Existing Orders");
+            }
+
+
             var phones = await _unitOfWork.VendorPhonesRepository.GetPhonesByVendorId(vendor.Id);
             foreach (var phone in phones)
             {
                 await _unitOfWork.VendorPhonesRepository.Delete(phone);
             }
 
+            await _unitOfWork.SaveAsync();
             // Load associated ApplicationUser
             var user = await _userManager.FindByIdAsync(vendor.UserId);
             if (user == null) return NotFound("Associated user not found.");
 
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+            if (userRoles.Any())
+            {
+                await _userManager.RemoveFromRoleAsync(user, userRoles.First());
+
+            }
+          
           await  _unitOfWork.VendorRepository.Delete(vendor);
 
 
