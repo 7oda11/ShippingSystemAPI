@@ -15,9 +15,10 @@ namespace ShippingSystem.Core.Entities
 
         public string CustomerName { get; set; }
 
-        //public string CustomerPhones { get; set; }
+        public string CustomerPhone1 { get; set; }
+        public string CustomerPhone2 { get; set; }
 
-        public string Address { get; set; }
+        public string EmailAddress { get; set; }
 
         public string Notes { get; set; }
 
@@ -27,9 +28,9 @@ namespace ShippingSystem.Core.Entities
 
         public bool IsShippedToVillage { get; set; }
 
-        public string OrderType { get; set; }
+        public string? OrderType { get; set; }
 
-        public string PaymentType { get; set; }
+        public string? PaymentType { get; set; }
 
         public DateTime CreationDate { get; set; }
 

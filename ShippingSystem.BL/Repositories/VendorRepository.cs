@@ -69,5 +69,10 @@ namespace ShippingSystem.BL.Repositories
                 .FirstOrDefaultAsync(v => v.UserId == userId);
         }
 
+        public async Task<Vendor> FindByNameAsync(string name)
+        {
+            return await _context.Vendors
+                .FirstOrDefaultAsync(v => v.Name == name);
+        }
     }
 }

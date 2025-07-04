@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShippingSystem.Core.Interfaces;
 
@@ -6,6 +7,7 @@ namespace ShippingSystem.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Employee")]
     public class EmployeeStatisticsController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;

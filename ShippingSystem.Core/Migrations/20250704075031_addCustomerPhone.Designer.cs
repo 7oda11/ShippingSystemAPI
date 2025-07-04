@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShippingSystem.Core.Entities;
 
@@ -11,9 +12,11 @@ using ShippingSystem.Core.Entities;
 namespace ShippingSystem.Core.Migrations
 {
     [DbContext(typeof(ShippingContext))]
-    partial class ShippingContextModelSnapshot : ModelSnapshot
+    [Migration("20250704075031_addCustomerPhone")]
+    partial class addCustomerPhone
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -397,6 +400,10 @@ namespace ShippingSystem.Core.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("CityId")
                         .HasColumnType("int");
 
@@ -407,15 +414,7 @@ namespace ShippingSystem.Core.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CustomerPhone1")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CustomerPhone2")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailAddress")
+                    b.Property<string>("CustomerPhone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -427,9 +426,11 @@ namespace ShippingSystem.Core.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OrderType")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PaymentType")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ShippingTypeId")

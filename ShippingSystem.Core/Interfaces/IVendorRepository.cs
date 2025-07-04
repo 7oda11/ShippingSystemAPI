@@ -14,6 +14,7 @@ namespace ShippingSystem.Core.Interfaces
         Task<bool> AddNewVendor(AddVendorDTO vdto);
 
         Task<Vendor> FindByUserIdAsync(string userId);
+        Task<Vendor> FindByNameAsync(string name);
 
     }
 }
