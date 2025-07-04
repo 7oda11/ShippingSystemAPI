@@ -17,10 +17,6 @@
   <ItemGroup>
 
 
-
-    <Folder Include="Mapping\" />
-
-
     <Folder Include="Helper\" />
   </ItemGroup>
 

@@ -9,5 +9,6 @@ namespace ShippingSystem.Core.Interfaces
 {
     public interface IProductRepository: IGenericRepository<Product>
     {
+        Task<List<Product>>GetProductsByOrderId(int orderId);
     }
 }

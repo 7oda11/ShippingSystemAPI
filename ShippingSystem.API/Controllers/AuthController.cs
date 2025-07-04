@@ -29,9 +29,12 @@ namespace ShippingSystem.API.Controllers
 
             var claims = new List<Claim>
     {
-        new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-        new Claim(JwtRegisteredClaimNames.Email, user.Email),
-        new Claim(ClaimTypes.Name, user.UserName)
+       new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+    new Claim(JwtRegisteredClaimNames.Email, user.Email),
+    new Claim(ClaimTypes.Name, user.UserName),
+        new Claim("EmployeeId", user.Id.ToString())
+
+
     };
 
             foreach (var role in roles)
