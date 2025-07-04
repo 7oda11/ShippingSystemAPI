@@ -21,7 +21,7 @@ namespace ShippingSystem.API.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
             var list = await _unitOfWork.WeightSettingRepository.GetAll();
@@ -29,15 +29,14 @@ namespace ShippingSystem.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
             var setting = await _unitOfWork.WeightSettingRepository.GetById(id);
             if (setting == null) return NotFound();
             return Ok(_mapper.Map<WeightSettingDTO>(setting));
         }
-
-        [HttpPost]
+        [HttpPost("add-weightsetting")]
         public async Task<IActionResult> Create([FromBody] WeightSettingDTO dto)
         {
             var entity = _mapper.Map<WeightSetting>(dto);
@@ -46,7 +45,7 @@ namespace ShippingSystem.API.Controllers
             return Ok(_mapper.Map<WeightSettingDTO>(entity));
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("Update-WeightSettings/{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] WeightSettingDTO dto)
         {
             var entity = await _unitOfWork.WeightSettingRepository.GetById(id);
@@ -59,8 +58,7 @@ namespace ShippingSystem.API.Controllers
             await _unitOfWork.SaveAsync();
             return Ok(_mapper.Map<WeightSettingDTO>(entity));
         }
-
-        [HttpDelete("{id}")]
+        [HttpDelete("Delete-WeightSetting/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var entity = await _unitOfWork.WeightSettingRepository.GetById(id);
