@@ -71,17 +71,40 @@ namespace ShippingSystem.API.Controllers
             var addedGovernment = map.Map<GovernmentDTO>(newGovernment);
             return Ok(addedGovernment);
         }
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, GovernmentDTO govdto)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id,[FromBody] GovernmentDTO govdto)
         {
           var government = await  work.GovernmentRepository.GetGovernmentWithCitiesByIdAsync(id);
             if (government == null)
                 return NotFound($"Government with id {id} not found.");
+
              if(!ModelState.IsValid)
                 return BadRequest(ModelState);
             government.Id = govdto.Id;
             government.Name = govdto.Name;
-            government.Cities = govdto.ListCities?.Select(name=> new City { Name = name }).ToList() ?? new List<City>();
+
+            var existingCities =government.Cities.ToList();
+            var newCitiesNames = govdto.ListCities ?? new List<string>();
+
+            foreach(var oldCity in existingCities.ToList())
+            {
+                var isUsedInVendor = await work.VendorRepository.IsCityUsed(oldCity.Id);
+                if(!newCitiesNames.Contains(oldCity.Name) && ! isUsedInVendor)
+                {
+                    government.Cities.Remove(oldCity);
+
+                }
+            }
+
+            foreach(var cityName in newCitiesNames)
+            {
+                if(!existingCities.Any(c=>c.Name == cityName))
+                {
+                    government.Cities.Add(new City { Name = cityName });
+                }
+            }
+       
+            //government.Cities = govdto.ListCities?.Select(name=> new City { Name = name }).ToList() ?? new List<City>();
             await work.GovernmentRepository.Update(government);
             await work.SaveAsync();
              var updatedGovernmentDTO = map.Map<GovernmentDTO>(government);
