@@ -1,4 +1,6 @@
 
+using Microsoft.AspNetCore.Components.Server.Circuits;
+using ShippingSystem.Core.DTO.City;
 using ShippingSystem.Core.Entities;
 
 
@@ -16,5 +18,6 @@ namespace ShippingSystem.Core.Interfaces
         Task<IEnumerable<City>> GetCitiesWithGovernmentsNameAsync();
         Task<City> GetCityWithGovernmentByIdAsync(int id);
         Task <City> GetCityWithName(string name);
+        Task<IEnumerable<CityNameDTO>> GetAllCitiesWithGovId(int govId);    
     }
 }
