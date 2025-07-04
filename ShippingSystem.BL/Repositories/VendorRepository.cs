@@ -77,6 +77,7 @@ namespace ShippingSystem.BL.Repositories
         {
             return await _context.Vendors
                 .FirstOrDefaultAsync(v => v.Name == name);
+        }
 
         public async Task<bool> IsCityUsed(int cityId)
         {

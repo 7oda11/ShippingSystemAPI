@@ -22,7 +22,7 @@ namespace ShippingSystem.API.Controllers
             this.unit = unitOfWork;
             this.mapper = mapper;
         }
-        public async Task<decimal> CalculateTotalPriceAsync(AddOrderDTO orderDto)
+        private async Task<decimal> CalculateTotalPriceAsync(AddOrderDTO orderDto)
         {
             if (orderDto == null)
                 throw new ArgumentNullException(nameof(orderDto));
