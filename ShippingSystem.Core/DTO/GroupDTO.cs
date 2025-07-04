@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace ShippingSystem.Core.DTO
 {
-    public class EmployeeDTO
+    public class GroupDTO
     {
         public int Id { get; set; }
-        public string FullName { get; set; }
-        public string Email { get; set; }
-        public string BranchName { get; set; }
-        public int? GroupId { get; set; }
+        public string Name { get; set; }
+        public List<string> Permissions { get; set; }
     }
 }

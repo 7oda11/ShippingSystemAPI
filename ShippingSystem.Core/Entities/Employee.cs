@@ -25,5 +25,8 @@ namespace ShippingSystem.Core.Entities
         public virtual Branch Branch { get; set; }
         public virtual ICollection<EmployeeAssignOrderToDelivery> Assignments { get; set; }
 
+        public int? GroupId { get; set; }
+        public virtual Group Group { get; set; }
+
     }
 }

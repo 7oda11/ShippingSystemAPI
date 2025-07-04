@@ -19,6 +19,24 @@ namespace ShippingSystem.Core.Entities
         {
 
         }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<GroupPermission>()
+                .HasKey(gp => new { gp.GroupId, gp.PermissionId }); 
+
+            modelBuilder.Entity<GroupPermission>()
+                .HasOne(gp => gp.Group)
+                .WithMany(g => g.GroupPermissions)
+                .HasForeignKey(gp => gp.GroupId);
+
+            modelBuilder.Entity<GroupPermission>()
+                .HasOne(gp => gp.Permission)
+                .WithMany(p => p.GroupPermissions)
+                .HasForeignKey(gp => gp.PermissionId);
+        }
+
         public virtual DbSet<Employee> Employees { get; set; }
         public virtual DbSet<Vendor> Vendors { get; set; }
         public virtual DbSet<DeliveryMan> DeliveryMen { get; set; }
@@ -32,6 +50,10 @@ namespace ShippingSystem.Core.Entities
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<WeightSetting> WeightSettings { get; set; }
         public virtual DbSet<Status> Statuses { get; set; }
+        public virtual DbSet<Group> Groups { get; set; }
+        public virtual DbSet<Permission> Permissions { get; set; }
+        public virtual DbSet<GroupPermission> GroupPermissions { get; set; }
+
 
 
 

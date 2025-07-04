@@ -8,8 +8,6 @@
 
   <ItemGroup>
 
-    <Folder Include="DTO\" />
-
     <Folder Include="Migrations\" />
     <Folder Include="Service\" />
   </ItemGroup>

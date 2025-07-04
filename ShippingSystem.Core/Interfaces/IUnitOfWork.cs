@@ -24,6 +24,9 @@ namespace ShippingSystem.Core.Interfaces
         IWeightSettingRepository WeightSettingRepository { get; }
         IVendorPhonesRepository VendorPhonesRepository { get; }
         IVendorRepository VendorRepository { get; }
+        IGroupRepository GroupRepository { get; }
+        IPermissionRepository PermissionRepository { get; }
+        IGroupPermissionRepository GroupPermissionRepository { get; }
 
         //void Save();
         Task SaveAsync(); // Optional if you support async operationsW

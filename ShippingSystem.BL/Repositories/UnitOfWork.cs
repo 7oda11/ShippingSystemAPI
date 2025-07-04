@@ -24,6 +24,9 @@ namespace ShippingSystem.BL.Repositories
         private IWeightSettingRepository _weightSettingRepository;
         private IVendorPhonesRepository _vendorPhonesRepository;
         private IVendorRepository _vendorRepository;
+        private IGroupRepository _groupRepository;
+        private IPermissionRepository _permissionRepository;
+        private IGroupPermissionRepository _groupPermissionRepository;
 
         public UnitOfWork(ShippingContext context, IMapper mapper)
         {
@@ -72,6 +75,14 @@ namespace ShippingSystem.BL.Repositories
 
         public IVendorRepository VendorRepository =>
             _vendorRepository ??= new VendorRepository(_context);
+        public IGroupRepository GroupRepository =>
+            _groupRepository ??= new GroupRepository(_context);
+
+        public IPermissionRepository PermissionRepository =>
+            _permissionRepository ??= new PermissionRepository(_context);
+
+        public IGroupPermissionRepository GroupPermissionRepository =>
+            _groupPermissionRepository ??= new GroupPermissionRepository(_context);
 
         public void Save()
         {

@@ -10,6 +10,18 @@ namespace ShippingSystem.API.Mapping
         {
             CreateMap<ShippingType, ShippingTypeDTO>().ReverseMap();
             CreateMap<WeightSetting, WeightSettingDTO>().ReverseMap();
+
+            CreateMap<CreateGroupDTO, Group>();
+            CreateMap<UpdateGroupDTO, Group>();
+            CreateMap<Group, GroupDetailsDTO>()
+               .ForMember(dest => dest.PermissionNames,
+               opt => opt.MapFrom(src => src.GroupPermissions.Select(gp => gp.Permission.Name).ToList()));
+ 
+
+
+            CreateMap<Permission, PermissionDTO>().ReverseMap();
+            CreateMap<CreatePermissionDTO, Permission>();
+            CreateMap<UpdatePermissionDTO, Permission>();
         }
     }
 }

@@ -15,6 +15,7 @@ using ShippingSystem.BL.Repositories;
 using System;
 using System.Text;
 using ShippingSystem.Core.SeedData;
+using ShippingSystem.API.Middleware;
 
 namespace ShippingSystem.API
 {
@@ -52,6 +53,9 @@ namespace ShippingSystem.API
             builder.Services.AddAutoMapper(typeof(MappConfig));
             builder.Services.AddScoped<IVendorRepository, VendorRepository>();
             builder.Services.AddScoped<IDeliveryManRepository, DeliveryManRepository>();
+            builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+            builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
+            builder.Services.AddScoped<IGroupPermissionRepository, GroupPermissionRepository>();
 
             #endregion
 
@@ -102,12 +106,16 @@ namespace ShippingSystem.API
                 var services = scope.ServiceProvider;
                 var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                var context = services.GetRequiredService<ShippingContext>();
                 await IdentityDataInitializer.SeedAsync(userManager, roleManager);
+                await PermissionSeeder.SeedPermissions(context);
+
             }
 
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
+            app.UseMiddleware<PermissionMiddleware>();
             app.UseAuthorization();
 
             app.MapControllers();
