@@ -12,8 +12,8 @@ using ShippingSystem.Core.Entities;
 namespace ShippingSystem.Core.Migrations
 {
     [DbContext(typeof(ShippingContext))]
-    [Migration("20250623204602_init")]
-    partial class init
+    [Migration("20250701180248_add-CityId-and-GovId-To-Vendor")]
+    partial class addCityIdandGovIdToVendor
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -271,9 +271,11 @@ namespace ShippingSystem.Core.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("PickedPrice")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -402,7 +404,7 @@ namespace ShippingSystem.Core.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CityId")
+                    b.Property<int>("CityId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationDate")
@@ -427,12 +429,8 @@ namespace ShippingSystem.Core.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("ShippingPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("ShippingTypeName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("ShippingTypeId")
+                        .HasColumnType("int");
 
                     b.Property<int>("StatusId")
                         .HasColumnType("int");
@@ -443,12 +441,14 @@ namespace ShippingSystem.Core.Migrations
                     b.Property<double>("TotalWeight")
                         .HasColumnType("float");
 
-                    b.Property<int>("VendorId")
+                    b.Property<int?>("VendorId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CityId");
+
+                    b.HasIndex("ShippingTypeId");
 
                     b.HasIndex("StatusId");
 
@@ -494,6 +494,10 @@ namespace ShippingSystem.Core.Migrations
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<double>("Quantity")
                         .HasColumnType("float");
 
@@ -505,6 +509,27 @@ namespace ShippingSystem.Core.Migrations
                     b.HasIndex("OrderId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("ShippingSystem.Core.Entities.ShippingType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("ShippingPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ShippingTypeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ShippingType");
                 });
 
             modelBuilder.Entity("ShippingSystem.Core.Entities.Status", b =>
@@ -539,9 +564,15 @@ namespace ShippingSystem.Core.Migrations
                     b.Property<float>("CancelledOrderPercentage")
                         .HasColumnType("real");
 
+                    b.Property<int?>("CityId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("GovernmentId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -552,6 +583,10 @@ namespace ShippingSystem.Core.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("GovernmentId");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -732,7 +767,15 @@ namespace ShippingSystem.Core.Migrations
                 {
                     b.HasOne("ShippingSystem.Core.Entities.City", "City")
                         .WithMany("Orders")
-                        .HasForeignKey("CityId");
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ShippingSystem.Core.Entities.ShippingType", "ShippingType")
+                        .WithMany()
+                        .HasForeignKey("ShippingTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ShippingSystem.Core.Entities.Status", "Status")
                         .WithMany("Orders")
@@ -742,11 +785,11 @@ namespace ShippingSystem.Core.Migrations
 
                     b.HasOne("ShippingSystem.Core.Entities.Vendor", "Vendor")
                         .WithMany("Orders")
-                        .HasForeignKey("VendorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("VendorId");
 
                     b.Navigation("City");
+
+                    b.Navigation("ShippingType");
 
                     b.Navigation("Status");
 
@@ -777,11 +820,23 @@ namespace ShippingSystem.Core.Migrations
 
             modelBuilder.Entity("ShippingSystem.Core.Entities.Vendor", b =>
                 {
+                    b.HasOne("ShippingSystem.Core.Entities.City", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId");
+
+                    b.HasOne("ShippingSystem.Core.Entities.Government", "Government")
+                        .WithMany()
+                        .HasForeignKey("GovernmentId");
+
                     b.HasOne("ShippingSystem.Core.Entities.ApplicationUser", "User")
                         .WithOne("VendorProfile")
                         .HasForeignKey("ShippingSystem.Core.Entities.Vendor", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("City");
+
+                    b.Navigation("Government");
 
                     b.Navigation("User");
                 });

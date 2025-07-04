@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ShippingSystem.Core.DTO;
+using ShippingSystem.Core.DTO.Vendor;
 using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.Interfaces;
-using ShippingSystem.Core.Migrations;
-using System.Threading.Tasks;
 
 namespace ShippingSystem.API.Controllers
 {
@@ -90,6 +88,7 @@ namespace ShippingSystem.API.Controllers
                 Name = v.Name,
                 Email = v.Email,
                 Address = v.Address
+                
             }).ToList();
             return Ok(result);
         }
@@ -98,18 +97,23 @@ namespace ShippingSystem.API.Controllers
         {
             var vendor = await _unitOfWork.VendorRepository.GetById(id);
             if (vendor == null) return NotFound();
+            var phones = await _unitOfWork.VendorPhonesRepository.GetPhonesByVendorId(vendor.Id);
+            foreach (var phone in phones)
+            {
+                await _unitOfWork.VendorPhonesRepository.Delete(phone);
+            }
 
             // Load associated ApplicationUser
             var user = await _userManager.FindByIdAsync(vendor.UserId);
             if (user == null) return NotFound("Associated user not found.");
 
           await  _unitOfWork.VendorRepository.Delete(vendor);
-          await  _unitOfWork.SaveAsync();
+
 
             var result = await _userManager.DeleteAsync(user);
             if (!result.Succeeded) return BadRequest(result.Errors);
-
-            return Ok();
+            await _unitOfWork.SaveAsync();
+            return Ok(new {message="Deleted Successfully"});
         }
 
         [HttpGet("{id}")]
@@ -125,6 +129,44 @@ namespace ShippingSystem.API.Controllers
                 Address = vendor.Address
             };
             return Ok(result);
+        }
+
+
+        [HttpPost("add-new-vendor-with-details")]
+        public async  Task<IActionResult> addVendorDetails(AddVendorDTO vdto)
+        {
+            if (vdto == null) return BadRequest("Invalid Data");
+           var newVendor = await _unitOfWork.VendorRepository.AddNewVendor(vdto);
+            if (!newVendor) return BadRequest("Failed To Add  Vendor");
+            return Ok(vdto);
+        }
+
+        [HttpPut("Update-Vendor-Details/{id}")]
+        public async  Task<IActionResult> UpdateVendorDetails(int id , AddVendorDTO vdto )
+        {
+            var vendor = await _unitOfWork.VendorRepository.GetById(id);
+            if (vendor == null) return BadRequest("This Vendor Not Found");
+   
+            
+               vendor.Name = vdto.name;
+                vendor.Email = vdto.email;
+            vendor.Address = vdto.address;
+                vendor.GovernmentId = vdto.GovernmentId;
+            vendor.CityId = vdto.CityId;
+            if(vendor.User!= null)
+            {
+                vendor.User.FullName = vdto.name;
+                vendor.User.Email = vdto.email;
+                vendor.User.UserName = vdto.email;
+                var token = await _userManager.GeneratePasswordResetTokenAsync(vendor.User);
+                var newPass = await _userManager.ResetPasswordAsync(vendor.User, token, vdto.password);
+                await  _unitOfWork.VendorRepository.Update(vendor);
+                await  _unitOfWork.SaveAsync();
+
+
+            }
+
+            return Ok(vdto);
         }
 
     }

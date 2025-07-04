@@ -12,8 +12,8 @@ using ShippingSystem.Core.Entities;
 namespace ShippingSystem.Core.Migrations
 {
     [DbContext(typeof(ShippingContext))]
-    [Migration("20250624191514_v1")]
-    partial class v1
+    [Migration("20250704075031_addCustomerPhone")]
+    partial class addCustomerPhone
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -271,9 +271,11 @@ namespace ShippingSystem.Core.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("PickedPrice")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -412,6 +414,10 @@ namespace ShippingSystem.Core.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CustomerPhone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsShippedToVillage")
                         .HasColumnType("bit");
 
@@ -493,6 +499,7 @@ namespace ShippingSystem.Core.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<double>("Quantity")
@@ -517,6 +524,7 @@ namespace ShippingSystem.Core.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("ShippingPrice")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ShippingTypeName")
@@ -560,9 +568,15 @@ namespace ShippingSystem.Core.Migrations
                     b.Property<float>("CancelledOrderPercentage")
                         .HasColumnType("real");
 
+                    b.Property<int?>("CityId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("GovernmentId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -573,6 +587,10 @@ namespace ShippingSystem.Core.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("GovernmentId");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -806,11 +824,23 @@ namespace ShippingSystem.Core.Migrations
 
             modelBuilder.Entity("ShippingSystem.Core.Entities.Vendor", b =>
                 {
+                    b.HasOne("ShippingSystem.Core.Entities.City", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId");
+
+                    b.HasOne("ShippingSystem.Core.Entities.Government", "Government")
+                        .WithMany()
+                        .HasForeignKey("GovernmentId");
+
                     b.HasOne("ShippingSystem.Core.Entities.ApplicationUser", "User")
                         .WithOne("VendorProfile")
                         .HasForeignKey("ShippingSystem.Core.Entities.Vendor", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("City");
+
+                    b.Navigation("Government");
 
                     b.Navigation("User");
                 });

@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Numerics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ShippingSystem.Core.DTO;
 using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.Interfaces;
-using ShippingSystem.Core.Migrations;
-using System.Threading.Tasks;
 
 namespace ShippingSystem.API.Controllers
 {
@@ -41,7 +39,7 @@ namespace ShippingSystem.API.Controllers
               await  _unitOfWork.EmployeeRepository.Add(employee);
              await   _unitOfWork.SaveAsync();
 
-                return Ok("Employee Created");
+                return Ok(new{message = "Employee Created" });
             }
             else
             {
@@ -49,12 +47,14 @@ namespace ShippingSystem.API.Controllers
             }
         }
         [HttpPut]
-        public async Task<IActionResult> Update(UpdateEmployeeDTO vm)
+        public async Task<IActionResult> Update([FromBody] UpdateEmployeeDTO vm)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var employee =await _unitOfWork.EmployeeRepository.GetById(vm.Id);
-            if (employee == null) return NotFound();
+            var employee = await _unitOfWork.EmployeeRepository.GetById(vm.Id);
+            if (employee == null)
+                return NotFound();
 
             employee.BranchId = vm.BranchId;
 
@@ -62,13 +62,22 @@ namespace ShippingSystem.API.Controllers
             {
                 employee.User.FullName = vm.FullName;
                 employee.User.Email = vm.Email;
-                employee.User.UserName = vm.Email;
+                employee.User.UserName = vm.UserName;
+
+                // ✅ فقط غير الباسورد لو تم إرسالها
+                if (!string.IsNullOrWhiteSpace(vm.Password))
+                {
+                    var token = await _userManager.GeneratePasswordResetTokenAsync(employee.User);
+                    var newPass = await _userManager.ResetPasswordAsync(employee.User, token, vm.Password);
+                    if (!newPass.Succeeded)
+                        return BadRequest(newPass.Errors);
+                }
             }
 
-         await   _unitOfWork.EmployeeRepository.Update(employee);
+            await _unitOfWork.EmployeeRepository.Update(employee);
             await _unitOfWork.SaveAsync();
 
-            return Ok();
+            return Ok(vm);
         }
 
         [HttpGet]
@@ -80,7 +89,11 @@ namespace ShippingSystem.API.Controllers
                 Id = e.Id,
                 FullName = e.User.FullName,
                 Email = e.User.Email,
-                BranchName = e.Branch?.Name
+                BranchName = e.Branch?.Name,
+                UserName = e.User.UserName,
+                BranchId = e.BranchId
+
+
             }).ToList();
 
             if (result == null || !result.Any())
@@ -98,13 +111,25 @@ namespace ShippingSystem.API.Controllers
             var user = await _userManager.FindByIdAsync(emp.UserId);
             if (user == null) return NotFound("Associated user not found.");
 
-           await _unitOfWork.EmployeeRepository.Delete(emp);
-           await _unitOfWork.SaveAsync();
+            // حذف علاقات المستخدم في AspNetUserRoles
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles.Any())
+            {
+                var removeRolesResult = await _userManager.RemoveFromRolesAsync(user, roles);
+                if (!removeRolesResult.Succeeded)
+                    return BadRequest(removeRolesResult.Errors);
+            }
 
+            // حذف الكيان من جدول الموظفين
+            await _unitOfWork.EmployeeRepository.Delete(emp);
+            await _unitOfWork.SaveAsync();
+
+            // حذف المستخدم نفسه بعد فصل علاقاته
             var result = await _userManager.DeleteAsync(user);
-            if (!result.Succeeded) return BadRequest(result.Errors);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
 
-            return Ok();
+            return Ok(new { message = "Deleted Successfully" });
         }
 
         [HttpGet("{id}")]

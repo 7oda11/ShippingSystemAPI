@@ -1,4 +1,5 @@
-﻿using ShippingSystem.Core.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using ShippingSystem.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,10 @@ namespace ShippingSystem.BL.Repositories
     {
         public ProductRepository(ShippingContext context) : base(context)
         { }
+
+        public async Task<List<Product>> GetProductsByOrderId(int orderId)
+        {
+            return await  _context.Products.Where(p=>p.OrderId == orderId).ToListAsync();
+        }
     }
 }

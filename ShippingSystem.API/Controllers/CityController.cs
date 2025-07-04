@@ -19,6 +19,7 @@ namespace ShippingSystem.API.Controllers
             this.work = work;
             map = _map;
         }
+
         [HttpGet]
         public  async Task <IActionResult> GetAllCitiesAsync()
         {
@@ -113,6 +114,24 @@ namespace ShippingSystem.API.Controllers
             //await work.SaveAsync();
             return Ok( new  {message= "Deleted Successfully"} );
         }
+
+
+        [HttpGet("GetCitiesByGovId/{govId}")]
+        public async Task<IActionResult> GetCitiesByGovId(int govId)
+        {
+            var result = await work.CityRepository.GetAllCitiesWithGovId(govId);
+            if(  result == null ||!result.Any())
+            {
+                return NotFound("There is No Cities in This Government");
+
+            }
+            return Ok( result );
+
+           
+
+
+        }
+
 
     }
 }

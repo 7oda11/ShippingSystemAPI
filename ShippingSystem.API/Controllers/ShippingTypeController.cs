@@ -55,7 +55,7 @@ namespace ShippingSystem.API.Controllers
             entity.ShippingTypeName = dto.ShippingTypeName;
             entity.ShippingPrice = dto.ShippingPrice;
 
-            _unitOfWork.ShippingTypeRepository.Update(entity);
+            _unitOfWork.ShippingTypeRepository.UpdateAsync(entity);
             await _unitOfWork.SaveAsync();
 
             return Ok(_mapper.Map<ShippingTypeDTO>(entity));
@@ -67,9 +67,9 @@ namespace ShippingSystem.API.Controllers
             var entity = await _unitOfWork.ShippingTypeRepository.GetById(id);
             if (entity == null) return NotFound();
 
-            _unitOfWork.ShippingTypeRepository.Delete(entity);
-            await _unitOfWork.SaveAsync();
-            return Ok();
+           await _unitOfWork.ShippingTypeRepository.Delete(entity);
+            //await _unitOfWork.SaveAsync();
+            return NoContent();
         }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShippingSystem.Core.Entities;
 
@@ -11,9 +12,11 @@ using ShippingSystem.Core.Entities;
 namespace ShippingSystem.Core.Migrations
 {
     [DbContext(typeof(ShippingContext))]
-    partial class ShippingContextModelSnapshot : ModelSnapshot
+    [Migration("20250701171129_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -397,6 +400,10 @@ namespace ShippingSystem.Core.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("CityId")
                         .HasColumnType("int");
 
@@ -404,18 +411,6 @@ namespace ShippingSystem.Core.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CustomerName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CustomerPhone1")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CustomerPhone2")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmailAddress")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -427,9 +422,11 @@ namespace ShippingSystem.Core.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OrderType")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PaymentType")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ShippingTypeId")
@@ -567,15 +564,9 @@ namespace ShippingSystem.Core.Migrations
                     b.Property<float>("CancelledOrderPercentage")
                         .HasColumnType("real");
 
-                    b.Property<int?>("CityId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("GovernmentId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -586,10 +577,6 @@ namespace ShippingSystem.Core.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CityId");
-
-                    b.HasIndex("GovernmentId");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -823,23 +810,11 @@ namespace ShippingSystem.Core.Migrations
 
             modelBuilder.Entity("ShippingSystem.Core.Entities.Vendor", b =>
                 {
-                    b.HasOne("ShippingSystem.Core.Entities.City", "City")
-                        .WithMany()
-                        .HasForeignKey("CityId");
-
-                    b.HasOne("ShippingSystem.Core.Entities.Government", "Government")
-                        .WithMany()
-                        .HasForeignKey("GovernmentId");
-
                     b.HasOne("ShippingSystem.Core.Entities.ApplicationUser", "User")
                         .WithOne("VendorProfile")
                         .HasForeignKey("ShippingSystem.Core.Entities.Vendor", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("City");
-
-                    b.Navigation("Government");
 
                     b.Navigation("User");
                 });
