@@ -9,5 +9,6 @@ namespace ShippingSystem.Core.Interfaces
 {
     public interface IShippingTypeRepository : IGenericRepository<ShippingType>
     {
+        public void UpdateAsync(ShippingType type);
     }
 }
