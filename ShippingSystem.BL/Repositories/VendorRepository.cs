@@ -27,10 +27,12 @@ namespace ShippingSystem.BL.Repositories
         }
 
 
-       public async  Task<bool> AddNewVendor(AddVendorDTO vdto)
+        public async Task<bool> AddNewVendor(AddVendorDTO vdto)
         {
-            if(vdto == null)
-            { return false; }
+            if (vdto == null)
+            {
+                return false;
+            }
 
             var user = new ApplicationUser
             {
@@ -38,34 +40,44 @@ namespace ShippingSystem.BL.Repositories
                 UserName = vdto.email,
                 Email = vdto.email,
                 PhoneNumber = vdto.phone,
-
             };
 
+            // ✅ Create user first
+            var result = await _userManager.CreateAsync(user, vdto.password);
+            if (!result.Succeeded)
+            {
+                return false;
+            }
+
+            // ✅ Now assign role after user exists
             var roleResult = await _userManager.AddToRoleAsync(user, "Vendor");
-            if(!roleResult.Succeeded) { return false; }
-            var result=  await _userManager.CreateAsync(user, vdto.password);
-            if (!result.Succeeded) { return false; }
+            if (!roleResult.Succeeded)
+            {
+                return false;
+            }
 
-
-             var newVendor = new  Vendor{
-                 Name = vdto.name,
-                 Email = vdto.email,
-                 Address = vdto.address,
-                 UserId = user.Id,
-                 GovernmentId = vdto.GovernmentId,
-                 CityId = vdto.CityId,
-                 Phones = new List<VendorPhones>
-                 {
-                     new VendorPhones {Phone = vdto.phone}
-                 }
-                 
+            var newVendor = new Vendor
+            {
+                Name = vdto.name,
+                Email = vdto.email,
+                Address = vdto.address,
+                UserId = user.Id,
+                GovernmentId = vdto.GovernmentId,
+                CityId = vdto.CityId,
+                Phones = new List<VendorPhones>
+        {
+            new VendorPhones { Phone = vdto.phone }
+        }
             };
+
             await _context.Vendors.AddAsync(newVendor);
             await _context.SaveChangesAsync();
+
             return true;
         }
 
-       
+
+
         public async Task<Vendor> FindByUserIdAsync(string userId)
         {
             return await _context.Vendors
