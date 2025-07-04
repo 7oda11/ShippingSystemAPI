@@ -16,5 +16,7 @@ namespace ShippingSystem.Core.Interfaces
         Task<Vendor> FindByUserIdAsync(string userId);
         Task<Vendor> FindByNameAsync(string name);
 
+        Task<bool> IsCityUsed(int cityId);
+
     }
 }

@@ -40,8 +40,12 @@ namespace ShippingSystem.BL.Repositories
                 PhoneNumber = vdto.phone,
 
             };
+
+            var roleResult = await _userManager.AddToRoleAsync(user, "Vendor");
+            if(!roleResult.Succeeded) { return false; }
             var result=  await _userManager.CreateAsync(user, vdto.password);
             if (!result.Succeeded) { return false; }
+
 
              var newVendor = new  Vendor{
                  Name = vdto.name,
@@ -73,6 +77,10 @@ namespace ShippingSystem.BL.Repositories
         {
             return await _context.Vendors
                 .FirstOrDefaultAsync(v => v.Name == name);
+
+        public async Task<bool> IsCityUsed(int cityId)
+        {
+            return await _context.Vendors.AnyAsync(v=>v.CityId == cityId);
         }
     }
 }

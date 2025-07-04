@@ -9,5 +9,6 @@ namespace ShippingSystem.Core.Interfaces
 {
     public interface IVendorPhonesRepository: IGenericRepository<VendorPhones>
     {
+        Task<List<VendorPhones>> GetPhonesByVendorId(int vendorId);
     }
 }
