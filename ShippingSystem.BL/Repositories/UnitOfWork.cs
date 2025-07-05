@@ -25,6 +25,7 @@ namespace ShippingSystem.BL.Repositories
         private IWeightSettingRepository _weightSettingRepository;
         private IVendorPhonesRepository _vendorPhonesRepository;
         private IVendorRepository _vendorRepository;
+        private IOrderCancellationRepository orderCancellationRepository;
 
         public UnitOfWork(ShippingContext context, IMapper mapper , UserManager<ApplicationUser> _userManager)
         {
@@ -74,6 +75,9 @@ namespace ShippingSystem.BL.Repositories
 
         public IVendorRepository VendorRepository =>
             _vendorRepository ??= new VendorRepository(_context, userManager);
+
+        public IOrderCancellationRepository OrderCancellationRepository =>
+            orderCancellationRepository ??= new OrderCancellationRepository(_context);
 
         public void Save()
         {

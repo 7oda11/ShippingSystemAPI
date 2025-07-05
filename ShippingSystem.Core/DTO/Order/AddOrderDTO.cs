@@ -26,7 +26,7 @@ namespace ShippingSystem.Core.DTO.Order
         public int CityId { get; set; }
         [Required]
 
-        public string VillageName { get; set; }
+        public string? VillageName { get; set; }
         [Required]
 
         public bool IsShippedToVillage { get; set; }

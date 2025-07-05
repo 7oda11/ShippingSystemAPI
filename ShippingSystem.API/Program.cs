@@ -52,6 +52,7 @@ namespace ShippingSystem.API
             builder.Services.AddAutoMapper(typeof(MappConfig));
             builder.Services.AddScoped<IVendorRepository, VendorRepository>();
             builder.Services.AddScoped<IDeliveryManRepository, DeliveryManRepository>();
+            builder.Services.AddScoped<IOrderCancellationRepository, OrderCancellationRepository>();
 
             #endregion
 
