@@ -28,14 +28,16 @@ namespace ShippingSystem.API.Controllers
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
 
             var claims = new List<Claim>
-    {
-       new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-    new Claim(JwtRegisteredClaimNames.Email, user.Email),
-    new Claim(ClaimTypes.Name, user.UserName),
-        new Claim("EmployeeId", user.Id.ToString())
+                            {
+                               //new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                               new Claim("id",user.Id.ToString()),
+                               new Claim("role",roles.First()),
+                               new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                               new Claim(ClaimTypes.Name, user.UserName),
+                                new Claim("EmployeeId", user.Id.ToString())
 
 
-    };
+                            };
 
             foreach (var role in roles)
             {

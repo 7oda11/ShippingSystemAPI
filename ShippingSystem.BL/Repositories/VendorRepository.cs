@@ -95,5 +95,7 @@ namespace ShippingSystem.BL.Repositories
         {
             return await _context.Vendors.AnyAsync(v=>v.CityId == cityId);
         }
+
+        //public async Task<Vendor?> FindByUserIdAsync(string userId)
     }
 }

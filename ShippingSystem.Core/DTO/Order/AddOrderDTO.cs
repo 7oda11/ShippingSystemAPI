@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace ShippingSystem.Core.DTO.Order
 {
@@ -42,6 +43,7 @@ namespace ShippingSystem.Core.DTO.Order
         public string VendorAddress { get; set; }
 
         public int? VendorId { get; set; }
+        public int? StatusId { get; set; }
         [Required]
 
         [Range(0, double.MaxValue, ErrorMessage = "TotalPrice must be a positive number.")]

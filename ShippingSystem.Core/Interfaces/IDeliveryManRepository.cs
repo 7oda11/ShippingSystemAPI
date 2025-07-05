@@ -13,6 +13,8 @@ namespace ShippingSystem.Core.Interfaces
     public interface IDeliveryManRepository: IGenericRepository<DeliveryMan>
     {
         Task<DeliveryMan> FindByUserIdAsync(string userId);
+        //Task<DeliveryMan> FindByUserIdAsync(string userId);
+
 
     }
 }

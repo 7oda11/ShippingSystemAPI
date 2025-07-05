@@ -20,7 +20,9 @@ namespace ShippingSystem.API.Mapping
                 dest.TotalPrice = (decimal)src.TotalCost;
                 dest.status = src.Status.Name;
             }).ReverseMap();
-            CreateMap<AddOrderDTO, Order>().AfterMap((src, dest) =>
+            CreateMap<AddOrderDTO, Order>()
+                 .ForMember(dest => dest.Status, opt => opt.Ignore())
+                .AfterMap((src, dest) =>
             {
                 dest.CustomerName = src.CustomerName;
                 dest.CustomerPhone1 = src.CustomerPhone1;
@@ -36,7 +38,7 @@ namespace ShippingSystem.API.Mapping
                 dest.CreationDate = DateTime.Now;
                 dest.OrderType = "Normal"; // Assuming a default value for OrderType
                 dest.PaymentType = "Cash"; // Assuming a default value for PaymentType
-                dest.StatusId =(int) OrderStatus.Pending;
+                //dest.StatusId =(int) OrderStatus.Pending;
 
             }).ReverseMap();
         }
