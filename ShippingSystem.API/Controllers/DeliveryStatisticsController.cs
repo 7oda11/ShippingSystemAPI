@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ShippingSystem.API.LookUps;
 using ShippingSystem.Core.DTO;
 using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.Interfaces;
@@ -59,7 +60,7 @@ namespace ShippingSystem.API.Controllers
 
             order.StatusId = newStatus.Id;
 
-            if (newStatus.Name.ToLower() == "cancelled")
+            if (newStatus.Name.ToLower() == OrderStatus.Cancelled.ToString().ToLower() || newStatus.Name.ToLower() == OrderStatus.Returned.ToString().ToLower())
             {
                 if (string.IsNullOrWhiteSpace(dto.CancellationNote))
                     return BadRequest("Cancellation note is required when cancelling an order.");
