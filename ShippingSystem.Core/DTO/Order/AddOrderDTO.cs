@@ -24,7 +24,7 @@ namespace ShippingSystem.Core.DTO.Order
 
         [Required]
         public int CityId { get; set; }
-        [Required]
+       
 
         public string? VillageName { get; set; }
         [Required]
