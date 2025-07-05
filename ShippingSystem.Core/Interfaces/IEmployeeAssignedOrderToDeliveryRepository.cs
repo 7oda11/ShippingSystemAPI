@@ -12,5 +12,7 @@ namespace ShippingSystem.Core.Interfaces
 {
     public interface IEmployeeAssignedOrderToDeliveryRepository : IGenericRepository<EmployeeAssignOrderToDelivery>
     {
+        Task<EmployeeAssignOrderToDelivery?> FindAssignmentByDeliveryAndOrderId(int deliveryManId, int orderId);
+
     }
 }

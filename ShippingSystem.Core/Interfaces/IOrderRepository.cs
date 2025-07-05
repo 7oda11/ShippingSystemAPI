@@ -9,5 +9,10 @@ namespace ShippingSystem.Core.Interfaces
 {
     public interface IOrderRepository : IGenericRepository<Order>
     {
+
+        Task<bool> HasOrdersForVendorAsync(int vendorId);
+
+        Task<IEnumerable<Order>> GetOrdersByVendorId(string userId);
+        Task<IEnumerable<Order>> GetOrderAssignedToDeliveryMan(int deliveryManId);
     }
 }
