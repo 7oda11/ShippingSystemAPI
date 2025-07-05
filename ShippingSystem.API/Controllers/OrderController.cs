@@ -49,7 +49,7 @@ namespace ShippingSystem.API.Controllers
             if (orderDto.TotalWeight > maxWeight)
             {
                 double extraWeight = orderDto.TotalWeight - maxWeight;
-                totalPrice += (decimal)(extraWeight * weightSetting.ExtraPrice) + (decimal)weightSetting.ExtraPrice;
+                totalPrice += (decimal)(extraWeight * weightSetting.ExtraPrice);
             }
 
             var shippingType = await unit.ShippingTypeRepository.GetById(orderDto.ShippingTypeId);
