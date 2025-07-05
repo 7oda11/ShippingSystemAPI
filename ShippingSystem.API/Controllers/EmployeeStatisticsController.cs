@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ShippingSystem.Core.DTO;
 using ShippingSystem.Core.Interfaces;
+using System.Security.Claims;
 
 namespace ShippingSystem.API.Controllers
 {
@@ -25,7 +27,8 @@ namespace ShippingSystem.API.Controllers
                 .GroupBy(o => o.Status.Name)
                 .Select(g => new { Status = g.Key, Count = g.Count() });
             return Ok(stats);
-        }
+        }        
+
     }
 
 }
