@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShippingSystem.API.LookUps;
+using ShippingSystem.BL.Repositories;
 using ShippingSystem.Core.DTO.Order;
 using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.Interfaces;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace ShippingSystem.API.Controllers
@@ -125,6 +127,10 @@ namespace ShippingSystem.API.Controllers
                 return BadRequest("At least one order item is required.");
             // Vendor check
             var vendor = await unit.VendorRepository.FindByNameAsync(orderDto.VendorName);
+
+           //to attach order by vendor id not vendor name
+            var userId= User.FindFirst("id")?.Value;
+            //var vendor = await unit.VendorRepository.FindByUserIdAsync(userId);
             if (vendor == null)
                 return BadRequest("Vendor not found. Please ensure the vendor exists before placing an order.");
             orderDto.VendorId = vendor.Id;
@@ -143,7 +149,7 @@ namespace ShippingSystem.API.Controllers
             order.CreationDate = DateTime.Now;
             order.OrderType = "Normal";
             order.PaymentType = "Cash";
-            order.StatusId = 1;
+            order.StatusId = (int)orderDto.StatusId;
 
             await unit.OrderRepository.Add(order);
             await unit.SaveAsync(); // Generate order.Id
@@ -286,6 +292,47 @@ namespace ShippingSystem.API.Controllers
         {
             var claim = User.Claims.FirstOrDefault(c => c.Type == "EmployeeId");
             return claim != null ? int.Parse(claim.Value) : 0;
+        }
+
+        // track orders
+        [HttpGet("TrackORders")]
+        [Authorize]
+        public async Task<IActionResult> TrackOrders([FromQuery] int? statusId)
+        {
+            //var userRole = User.FindFirst("role")?.Value;
+            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = User.FindFirst("id")?.Value;
+           
+
+            Console.WriteLine("Role from token: " + userRole);
+            Console.WriteLine("UserId from token: " + userId);
+            //int vendorId = 23;
+            IEnumerable<Order> orders = new List<Order> ();
+             switch (userRole?.ToLower())
+            {
+                case "vendor":
+                    orders = await unit.OrderRepository.GetOrdersByVendorId(userId);
+                    break;
+                case "deliveryman":
+                    var deliveryMan = await unit.DeliveryManRepository.FindByUserIdAsync(userId);
+                    if(deliveryMan!= null)
+                    orders = await unit.OrderRepository.GetOrderAssignedToDeliveryMan(deliveryMan.Id);
+
+                    break;
+                case "admin":
+                case "employee":
+                    orders = await unit.OrderRepository.GetAll();
+
+                    break;
+                 
+            }
+
+            if(statusId.HasValue)
+                orders = orders.Where(o=>o.StatusId == statusId.Value);
+
+            var result =mapper.Map<List<OrderDTO>>(orders);
+            return Ok(result);
+
         }
 
     }
