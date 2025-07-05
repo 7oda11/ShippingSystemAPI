@@ -46,7 +46,7 @@ namespace ShippingSystem.API.Controllers
                await _unitOfWork.DeliveryManRepository.Add(deliveryMan);
               await  _unitOfWork.SaveAsync();
 
-                return Ok("DeliveryMan Created");
+                return Ok(new { message="DeliveryMan Created" });
             }
             else
             {
