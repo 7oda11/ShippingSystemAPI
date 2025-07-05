@@ -76,7 +76,7 @@ namespace ShippingSystem.API.Controllers
         public async Task<IActionResult> GetAllOrders(
      [FromQuery] int? status,
      [FromQuery] int pageNumber = 1,
-     [FromQuery] int pageSize = 10)
+     [FromQuery] int pageSize = 4)
         {
             if (pageNumber <= 0 || pageSize <= 0)
                 return BadRequest("Page number and page size must be greater than zero.");
