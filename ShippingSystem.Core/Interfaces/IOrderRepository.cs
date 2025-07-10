@@ -14,5 +14,6 @@ namespace ShippingSystem.Core.Interfaces
 
         Task<IEnumerable<Order>> GetOrdersByVendorId(string userId);
         Task<IEnumerable<Order>> GetOrderAssignedToDeliveryMan(int deliveryManId);
+        Task<IEnumerable<Order>> GetAllWithVendorNames();
     }
 }

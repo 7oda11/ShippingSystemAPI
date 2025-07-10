@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ShippingSystem.Core.DTO;
 using ShippingSystem.Core.Entities;
@@ -16,13 +17,15 @@ namespace ShippingSystem.API.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _config;
+        private readonly ShippingContext context;
 
-        public AuthController(UserManager<ApplicationUser> userManager, IConfiguration config)
+        public AuthController(UserManager<ApplicationUser> userManager, IConfiguration config, ShippingContext context)
         {
             _userManager = userManager;
             _config = config;
+            this.context = context;
         }
-        private string GenerateJwtToken(ApplicationUser user, IList<string> roles)
+        private string GenerateJwtToken(ApplicationUser user, IList<string> roles, int? employeeId)
         {
             var jwtSettings = _config.GetSection("Jwt");
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
@@ -34,10 +37,14 @@ namespace ShippingSystem.API.Controllers
                                new Claim("role",roles.First()),
                                new Claim(JwtRegisteredClaimNames.Email, user.Email),
                                new Claim(ClaimTypes.Name, user.UserName),
-                                new Claim("EmployeeId", user.Id.ToString())
+                                //new Claim("EmployeeId", user.Id.ToString())
 
 
                             };
+            if (employeeId.HasValue)
+            {
+                claims.Add(new Claim("EmployeeId", employeeId.Value.ToString()));
+            }
 
             foreach (var role in roles)
             {
@@ -64,7 +71,10 @@ namespace ShippingSystem.API.Controllers
             }
 
             var roles = await _userManager.GetRolesAsync(user);
-            var token = GenerateJwtToken(user, roles);
+            //find emp that attached to user
+            var employeeId= await context.Employees.FirstOrDefaultAsync(e=>e.UserId == user.Id);
+
+            var token = GenerateJwtToken(user, roles, employeeId?.Id);
 
             return Ok(new
             {

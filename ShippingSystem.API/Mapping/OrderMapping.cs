@@ -17,6 +17,8 @@ namespace ShippingSystem.API.Mapping
                 dest.CustomerPhone = src.CustomerPhone1;
                 dest.Governmennt = src.City?.Government?.Name ?? string.Empty;
                 dest.City = src.City?.Name ?? string.Empty;
+                dest.CityId = src.CityId;
+               dest.VendorName = src.Vendor?.Name ?? "";
                 dest.TotalPrice = (decimal)src.TotalCost;
                 dest.status = src.Status.Name;
             }).ReverseMap();
