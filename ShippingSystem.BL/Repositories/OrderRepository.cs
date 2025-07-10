@@ -38,5 +38,15 @@ namespace ShippingSystem.BL.Repositories
         {
           return await _context.Orders.Where(o=>o.Assignments.Any(a=>a.DeliveryID==deliveryManId)).ToListAsync();
         }
+
+        public async Task<Order?> GetByIdWithProducts(int id)
+        {
+            return await context.Orders
+                .Include(o => o.Products)
+                .Include(o => o.City)
+                .Include(o => o.ShippingType)
+                .FirstOrDefaultAsync(o => o.Id == id);
+        }
+
     }
 }
