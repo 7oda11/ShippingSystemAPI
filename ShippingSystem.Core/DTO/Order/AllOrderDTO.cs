@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace ShippingSystem.Core.DTO.Order
 {
-    public class UpdateOrderDTO
+    public class AllOrderDTO
     {
+          public int Id { get; set; }
         [Required]
         [StringLength(100)]
         public string CustomerName { get; set; }
@@ -28,8 +29,8 @@ namespace ShippingSystem.Core.DTO.Order
 
         [Required]
         public int CityId { get; set; }
-        [Required]
 
+        [Required]
         public string Address { get; set; }
         [Required]
 
@@ -45,10 +46,9 @@ namespace ShippingSystem.Core.DTO.Order
 
         [StringLength(250)]
         public string VendorAddress { get; set; }
-        [Required]
 
-        public int StatusId { get; set; }
         public int? VendorId { get; set; }
+        public int? StatusId { get; set; }
         [Required]
 
         [Range(0, double.MaxValue, ErrorMessage = "TotalPrice must be a positive number.")]
@@ -60,6 +60,25 @@ namespace ShippingSystem.Core.DTO.Order
         public double TotalWeight { get; set; }
 
         [MinLength(1, ErrorMessage = "At least one order item is required.")]
-        public List<AddOrderItemDTO> OrderItems { get; set; } = new List<AddOrderItemDTO>();
+        public List<loadOrderItemDTO> OrderItems { get; set; } = new List<loadOrderItemDTO>();
+    }
+
+    public class loadOrderItemDTO
+    {
+        [Required]
+        [StringLength(100)]
+        public string ProductName { get; set; }
+        [Required]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Quantity must be greater than zero.")]
+        public double Quantity { get; set; }
+        [Required]
+
+        [Range(0.01, double.MaxValue, ErrorMessage = "Weight must be greater than zero.")]
+        public double Weight { get; set; } // Corrected casing from "weigth"
+        [Required]
+
+        [Range(0, double.MaxValue, ErrorMessage = "Price must be a positive number.")]
+        public decimal Price { get; set; }
+
     }
 }

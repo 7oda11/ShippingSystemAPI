@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ShippingSystem.Core.Entities;
 using System;
 using System.Collections.Generic;
@@ -37,6 +38,23 @@ namespace ShippingSystem.BL.Repositories
         public async Task<IEnumerable<Order>> GetOrderAssignedToDeliveryMan(int deliveryManId)
         {
           return await _context.Orders.Where(o=>o.Assignments.Any(a=>a.DeliveryID==deliveryManId)).ToListAsync();
+        }
+
+        public async Task<Order> GetOrderByID(int orderId)
+        {
+            return await _context.Orders.Include(o =>o.City).ThenInclude(o=>o.Government)
+                .Include(o=>o.Vendor)
+                .FirstOrDefaultAsync(o=>o.Id==orderId);
+        }
+
+        public async Task<IQueryable<Order>> GetQueryable()
+        {
+            return await Task.FromResult(
+                _context.Orders
+                    .Include(o => o.Status)
+                    .Include(o => o.City)
+                    .AsQueryable()
+            );
         }
     }
 }
