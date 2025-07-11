@@ -19,6 +19,7 @@ namespace ShippingSystem.Core.DTO.Order
         public string status { get; set; }
         public int statusId { get; set; }
         public decimal TotalPrice { get; set; }
+        public string? CancelledOrReturnedNotes { get; set; }
 
 
     }

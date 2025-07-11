@@ -21,6 +21,7 @@ namespace ShippingSystem.API.Mapping
                dest.VendorName = src.Vendor?.Name ?? "";
                 dest.TotalPrice = (decimal)src.TotalCost;
                 dest.status = src.Status.Name;
+                dest.CancelledOrReturnedNotes=src.OrderCancellation?.Reason ??null;
             }).ReverseMap();
 
             CreateMap<AddOrderDTO, Order>()

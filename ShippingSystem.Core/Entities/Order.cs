@@ -59,10 +59,11 @@ namespace ShippingSystem.Core.Entities
 
         public virtual ICollection<EmployeeAssignOrderToDelivery> Assignments { get; set; }
         public virtual ICollection<OrderCustomerPhones> OrderCustomerPhones { get; set; }
+        public virtual OrderCancellation OrderCancellation   { get; set; }
 
-       
 
 
-       
+
+
     }
 }
