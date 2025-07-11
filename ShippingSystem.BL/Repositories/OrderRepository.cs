@@ -41,6 +41,16 @@ namespace ShippingSystem.BL.Repositories
         }
 
 
+        public async Task<Order?> GetByIdWithProducts(int id)
+        {
+            return await context.Orders
+                .Include(o => o.Products)
+                .Include(o => o.City)
+                .Include(o => o.ShippingType)
+                .FirstOrDefaultAsync(o => o.Id == id);
+        }
+
+
         public async Task<IEnumerable<Order>> GetAllWithVendorNames()
         {
             return await context.Orders.Include(o => o.Vendor).Include(c=> c.City)
@@ -63,5 +73,6 @@ namespace ShippingSystem.BL.Repositories
             );
 
         }
+
     }
 }

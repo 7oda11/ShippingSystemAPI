@@ -2,7 +2,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+
+using ShippingSystem.API.Helper;
+
 using Microsoft.EntityFrameworkCore;
+
 using ShippingSystem.API.LookUps;
 using ShippingSystem.BL.Repositories;
 using ShippingSystem.Core.DTO.Order;
@@ -203,6 +207,7 @@ namespace ShippingSystem.API.Controllers
             }
             // Map and save order
             var order = mapper.Map<Order>(orderDto);
+            order.TotalCost = (double)orderDto.TotalPrice;
             order.CreationDate = DateTime.Now;
             order.OrderType = "Normal";
             order.PaymentType = "Cash";
@@ -438,6 +443,21 @@ namespace ShippingSystem.API.Controllers
             return Ok(result);
 
         }
+
+        [HttpGet("ExportInvoice/{orderId}")]
+        public async Task<IActionResult> ExportInvoice(int orderId)
+        {
+            var order = await unit.OrderRepository.GetByIdWithProducts(orderId);
+            if (order == null) return NotFound("Order not found.");
+
+            var weightSetting = (await unit.WeightSettingRepository.GetAll()).FirstOrDefault();
+            var pdfBytes = InvoicePdfHelper.Generate(order, weightSetting);
+
+            return File(pdfBytes, "application/pdf", $"Invoice_Order_{orderId}.pdf");
+        }
+
+
+
 
     }
 
