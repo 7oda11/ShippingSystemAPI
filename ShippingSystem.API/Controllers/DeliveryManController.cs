@@ -153,5 +153,23 @@ namespace ShippingSystem.API.Controllers
             };
             return Ok(result);
         }
+
+        [HttpGet("GetDeliveryMenByCityID/{cityId}")]
+        public async Task<IActionResult> GetDeliveryMenByCityID(int cityId)
+        {
+
+        
+            var deliverymen = await _unitOfWork.DeliveryManRepository.GetByCityId(cityId);
+            if (deliverymen == null) return NotFound("Ther is No Delivery Men in this City");
+             var filteredDeliverymen= deliverymen.Select(dm => new
+             {
+                 dm.Id,
+                 dm.Name,
+             
+             }).ToList();
+
+
+            return Ok(filteredDeliverymen);
+        }
     }
 }

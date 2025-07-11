@@ -20,6 +20,11 @@ namespace ShippingSystem.BL.Repositories
                 .FirstOrDefaultAsync(dm => dm.UserId == userId);
         }
 
+        public async Task<IEnumerable<DeliveryMan>> GetByCityId(int cityID)
+        {
+          return await _context.DeliveryMen.Where(dm=>dm.CityID == cityID)
+              .ToListAsync();
+        }
     }
 
 }
