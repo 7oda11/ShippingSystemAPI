@@ -2,7 +2,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+
 using ShippingSystem.API.Helper;
+
+using Microsoft.EntityFrameworkCore;
+
 using ShippingSystem.API.LookUps;
 using ShippingSystem.BL.Repositories;
 using ShippingSystem.Core.DTO.Order;
@@ -67,47 +71,103 @@ namespace ShippingSystem.API.Controllers
 
             if (orderDto.IsShippedToVillage)
             {
-                if (string.IsNullOrWhiteSpace(orderDto.VillageName))
-                    throw new InvalidOperationException("Village name is required.");
+                //if (string.IsNullOrWhiteSpace(orderDto.Address))
+                //    throw new InvalidOperationException("Address is required.");
                 totalPrice += 10m;
             }
 
             return totalPrice;
         }
 
+        //   [HttpGet("GetAllOrders")]
+        //   public async Task<IActionResult> GetAllOrders(
+        //[FromQuery] int? status,
+        //[FromQuery] int pageNumber = 1,
+        //[FromQuery] int pageSize = 4)
+        //   {
+        //       if (pageNumber <= 0 || pageSize <= 0)
+        //           return BadRequest("Page number and page size must be greater than zero.");
+
+        //       // Fetch and optionally filter orders by status
+        //       var allOrders = await unit.OrderRepository.GetAll(); // You can optimize with a filtered query in your repo
+        //       if (status.HasValue)
+        //       {
+        //           allOrders = allOrders.Where(o => o.StatusId == (int)status.Value).ToList();
+        //       }
+
+        //       // Total count for pagination metadata
+        //       var totalCount = allOrders.Count;
+        //       var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+        //       // Apply pagination
+        //       var pagedOrders = allOrders
+        //           .Skip((pageNumber - 1) * pageSize)
+        //           .Take(pageSize)
+        //           .ToList();
+
+        //       if (!pagedOrders.Any())
+        //           return NotFound("No orders found for the specified criteria.");
+
+        //       // Map to DTOs
+        //       var result = mapper.Map<List<OrderDTO>>(pagedOrders);
+
+        //       // Return result with pagination metadata
+        //       return Ok(new
+        //       {
+        //           data = result,
+        //           pageNumber,
+        //           pageSize,
+        //           totalPages,
+        //           totalCount
+        //       });
+        //   }
+
         [HttpGet("GetAllOrders")]
         public async Task<IActionResult> GetAllOrders(
-     [FromQuery] int? status,
-     [FromQuery] int pageNumber = 1,
-     [FromQuery] int pageSize = 4)
+    [FromQuery] int? status,
+    [FromQuery] string? searchTerm,
+    [FromQuery] int pageNumber = 1,
+    [FromQuery] int pageSize = 4)
         {
             if (pageNumber <= 0 || pageSize <= 0)
                 return BadRequest("Page number and page size must be greater than zero.");
 
-            // Fetch and optionally filter orders by status
-            var allOrders = await unit.OrderRepository.GetAll(); // You can optimize with a filtered query in your repo
+            // 1. Fetch IQueryable to filter on DB level (أفضل أداء)
+            var query = await unit.OrderRepository.GetQueryable(); // لازم تجهزي دي في الريبو لو مش موجودة
+
+            // 2. Filter by status if provided
             if (status.HasValue)
             {
-                allOrders = allOrders.Where(o => o.StatusId == (int)status.Value).ToList();
+                query = query.Where(o => o.StatusId == status.Value);
             }
 
-            // Total count for pagination metadata
-            var totalCount = allOrders.Count;
+            // 3. Apply search filtering
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+                query = query.Where(o =>
+                    o.CustomerName.ToLower().Contains(searchTerm) ||
+                    o.Vendor.Name.ToLower().Contains(searchTerm) ||
+                    o.Status.Name.ToLower().Contains(searchTerm) ||
+                    o.City.Name.ToLower().Contains(searchTerm) 
+                   
+                );
+            }
+
+            // 4. Count before pagination
+            var totalCount = await query.CountAsync();
             var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
 
-            // Apply pagination
-            var pagedOrders = allOrders
+            // 5. Pagination
+            var pagedOrders = await query
+                .OrderByDescending(o => o.Vendor.Name)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .ToList();
+                .ToListAsync();
 
-            if (!pagedOrders.Any())
-                return NotFound("No orders found for the specified criteria.");
-
-            // Map to DTOs
+            // 6. Mapping to DTO
             var result = mapper.Map<List<OrderDTO>>(pagedOrders);
 
-            // Return result with pagination metadata
             return Ok(new
             {
                 data = result,
@@ -175,41 +235,84 @@ namespace ShippingSystem.API.Controllers
         [HttpGet("GetOrderById/{id}")]
         public async Task<IActionResult> GetOrderById(int id)
         {
-            var order = await unit.OrderRepository.GetById(id);
+            var order = await unit.OrderRepository.GetOrderByID(id);
             if (order == null)
             {
                 return NotFound($"Order with ID {id} not found.");
             }
-            return Ok(mapper.Map<AddOrderDTO>(order));
+          
+            if (order == null)
+                return NotFound();
+
+            var dto = new AllOrderDTO
+            {
+                Id = order.Id,
+                CustomerName = order.CustomerName,
+                CustomerPhone1 = order.CustomerPhone1,
+                CustomerPhone2 = order.CustomerPhone2,
+                Email = order.EmailAddress,
+                GovernmentId = order.City?.GovernmentId ?? 0,
+                CityId = order.CityId,
+                Address = order.Address,
+                IsShippedToVillage = order.IsShippedToVillage,
+                ShippingTypeId = order.ShippingTypeId,
+                VendorName = order.Vendor?.Name??"",
+                VendorAddress = order.Vendor?.Address ?? "",
+                VendorId = order.VendorId,
+                StatusId = order.StatusId,
+                TotalPrice = (decimal)order.TotalCost,
+                Notes = order.Notes,
+                TotalWeight = order.TotalWeight,
+                OrderItems = order.Products.Select(p => new loadOrderItemDTO
+                {
+                    ProductName = p.Name,
+                    Price = p.Price,
+                    Quantity = p.Quantity,
+                    Weight = p.Weight
+                }).ToList()
+            };
+
+
+            Console.WriteLine($"Order Email: {order.EmailAddress}");
+            Console.WriteLine($"GovernmentId: {order.City}");
+            Console.WriteLine($"VillageName: {order}");
+            //Console.WriteLine($"TotalPrice: {order.TotalPrice}");
+
+            //return Ok(mapper.Map<AllOrderDTO>(order));
+
+            return Ok(dto);
         }
+
+
         [HttpPut("UpdateOrder/{id}")]
         public async Task<IActionResult> UpdateOrder(int id, [FromBody] UpdateOrderDTO orderDto)
         {
             if (orderDto == null) return BadRequest("Order data is required.");
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            var existingOrder = await unit.OrderRepository.GetById(id);
+
+            var existingOrder = await unit.OrderRepository.GetOrderByID(id);
             if (existingOrder == null)
-            {
                 return NotFound($"Order with ID {id} not found.");
-            }
-            var order = mapper.Map<Order>(orderDto);
-            order.CreationDate = DateTime.Now;
-            order.OrderType = "Normal";
-            order.PaymentType = "Cash";
-            order.StatusId = orderDto.StatusId;
 
-            await unit.OrderRepository.Add(order);
-            await unit.SaveAsync(); // Generate order.Id
+            // ✅ حدث البيانات
+            mapper.Map(orderDto, existingOrder);
+            existingOrder.CreationDate = DateTime.Now;
+            existingOrder.OrderType = "Normal";
+            existingOrder.PaymentType = "Cash";
 
-            var deletedProducts = await unit.ProductRepository.GetProductsByOrderId(order.Id);
+            await unit.OrderRepository.Update(existingOrder);
+            await unit.SaveAsync();
+
+            // ✅ حذف المنتجات القديمة
+            var deletedProducts = await unit.ProductRepository.GetProductsByOrderId(existingOrder.Id);
             foreach (var item in deletedProducts)
                 await unit.ProductRepository.Delete(item);
-            
-            // Map and save products
+
+            // ✅ إضافة المنتجات الجديدة
             var products = orderDto.OrderItems.Select(item =>
             {
                 var product = mapper.Map<Product>(item);
-                product.OrderId = order.Id;
+                product.OrderId = existingOrder.Id;
                 return product;
             }).ToList();
 
@@ -217,9 +320,12 @@ namespace ShippingSystem.API.Controllers
                 await unit.ProductRepository.Add(product);
 
             await unit.SaveAsync();
-            return Ok(new { message = "Order updated successfully" });
 
+            // ✅ استخدم DTO في الإرجاع
+            var resultDto = mapper.Map<OrderDTO>(existingOrder);
+            return Ok(resultDto);
         }
+
 
         [HttpDelete("DeleteOrder/{id}")]
         public async Task<IActionResult> DeleteOrder(int id)
@@ -264,6 +370,7 @@ namespace ShippingSystem.API.Controllers
 
             return Ok(new { message = "Order status updated successfully", orderId, newStatus = ((OrderStatus)statusId).ToString() });
         }
+
         [HttpPut("EmployeeAssignOrderToDeliveyMan/{OrderID}/{DeliveryManId}")]
         [Authorize]
         public async Task<IActionResult> AssignOrderToDeliveryMan(int orderId, int deliveryManId)
@@ -323,7 +430,7 @@ namespace ShippingSystem.API.Controllers
                     break;
                 case "admin":
                 case "employee":
-                    orders = await unit.OrderRepository.GetAll();
+                    orders = await unit.OrderRepository.GetAllWithVendorNames();
 
                     break;
                  
