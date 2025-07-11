@@ -15,6 +15,10 @@ namespace ShippingSystem.Core.DTO.Order
         public string Governmennt { get; set; } 
         public string City { get; set; }
         public string status { get; set; }
+        public int statusId { get; set; }
         public decimal TotalPrice { get; set; }
+
+        public string VendorName { get; set; }
+
     }
 }

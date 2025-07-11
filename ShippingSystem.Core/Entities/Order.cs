@@ -13,6 +13,8 @@ namespace ShippingSystem.Core.Entities
         [Key]
         public int Id { get; set; }
 
+        [Required]
+        public string Address { get; set; }
         public string CustomerName { get; set; }
 
         public string CustomerPhone1 { get; set; }
@@ -22,6 +24,7 @@ namespace ShippingSystem.Core.Entities
 
         public string Notes { get; set; }
 
+
         public double TotalWeight { get; set; }
 
         public double TotalCost { get; set; }
@@ -29,9 +32,9 @@ namespace ShippingSystem.Core.Entities
         public bool IsShippedToVillage { get; set; }
 
         public string? OrderType { get; set; }
-
+       
         public string? PaymentType { get; set; }
-
+      
         public DateTime CreationDate { get; set; }
 
         public int? VendorId { get; set; }
@@ -39,12 +42,11 @@ namespace ShippingSystem.Core.Entities
         [ForeignKey("VendorId")]
         public virtual Vendor Vendor { get; set; }
 
-
         public int StatusId { get; set; }
 
         [ForeignKey("StatusId")]
         public virtual Status Status { get; set; }
-
+        
         public int CityId { get; set; }
 
         [ForeignKey("CityId")]
@@ -57,5 +59,10 @@ namespace ShippingSystem.Core.Entities
 
         public virtual ICollection<EmployeeAssignOrderToDelivery> Assignments { get; set; }
         public virtual ICollection<OrderCustomerPhones> OrderCustomerPhones { get; set; }
+
+       
+
+
+       
     }
 }
