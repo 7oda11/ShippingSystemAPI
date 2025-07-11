@@ -21,5 +21,6 @@ namespace ShippingSystem.Core.DTO
         public string Phone { get; set; }
         [Required]
         public int CityId { get; set; }
+        
     }
 }

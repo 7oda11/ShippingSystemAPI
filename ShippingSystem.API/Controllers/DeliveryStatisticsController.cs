@@ -9,7 +9,9 @@ using System.Security.Claims;
 
 namespace ShippingSystem.API.Controllers
 {
-    [Authorize(Roles = "DeliveryMan")]
+    //[Authorize(Roles = "DeliveryMan")]
+    [Authorize(Roles = "Admin")]
+
     [Route("api/[controller]")]
     [ApiController]
     public class DeliveryStatisticsController : ControllerBase
