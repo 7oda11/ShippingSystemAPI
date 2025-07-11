@@ -41,7 +41,8 @@ namespace ShippingSystem.API.Controllers
                     Name = model.FullName,
                     Phone = model.Phone,
                     Email = model.Email,
-                    CityID = model.CityId
+                    CityID = model.CityId,
+
                 };
                await _unitOfWork.DeliveryManRepository.Add(deliveryMan);
               await  _unitOfWork.SaveAsync();
@@ -78,7 +79,7 @@ namespace ShippingSystem.API.Controllers
           await  _unitOfWork.DeliveryManRepository.Update(dm);
           await  _unitOfWork.SaveAsync();
 
-            return Ok();
+            return Ok(vm);
         }
 
         [HttpGet]
@@ -101,6 +102,8 @@ namespace ShippingSystem.API.Controllers
                 Name = d.DeliveryMan.Name,
                 Email = d.DeliveryMan.Email,
                 Phone = d.DeliveryMan.Phone,
+                //UserName=d.DeliveryMan.UserName,
+                //FullName=d.DeliveryMan.FullName,     
                 CityName = d.City?.Name
             }).ToList();
 
@@ -111,21 +114,29 @@ namespace ShippingSystem.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var d =await _unitOfWork.DeliveryManRepository.GetById(id);
+            var d = await _unitOfWork.DeliveryManRepository.GetById(id);
             if (d == null) return NotFound();
 
-            // Load the ApplicationUser (if not already included)
             var user = await _userManager.FindByIdAsync(d.UserId);
             if (user == null) return NotFound("Associated user not found.");
+            var userRoles = await _userManager.GetRolesAsync(user);
+            if (userRoles.Any())
+            {
+                await _userManager.RemoveFromRoleAsync(user, userRoles.First());
+            }
 
-          await  _unitOfWork.DeliveryManRepository.Delete(d);
-          await  _unitOfWork.SaveAsync();
+            // 1. Remove deliveryman first
+            await _unitOfWork.DeliveryManRepository.Delete(d);
+            await _unitOfWork.SaveAsync();
 
+            // 2. Then remove user
             var result = await _userManager.DeleteAsync(user);
             if (!result.Succeeded) return BadRequest(result.Errors);
 
-            return Ok();
+            return Ok(new { message = "deleted successfully" });
+
         }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
