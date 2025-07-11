@@ -53,8 +53,9 @@ namespace ShippingSystem.BL.Repositories
 
         public async Task<IEnumerable<Order>> GetAllWithVendorNames()
         {
-            return await context.Orders.Include(o => o.Vendor).Include(c=> c.City)
+            return await context.Orders.Include(o => o.Vendor).Include(c => c.City)
                 .ThenInclude(o => o.Government).Include(o => o.Status).ToListAsync();
+        }
 
         public async Task<Order> GetOrderByID(int orderId)
         {

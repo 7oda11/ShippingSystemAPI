@@ -249,7 +249,7 @@ namespace ShippingSystem.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Branches");
+                    b.ToTable("Branches", (string)null);
                 });
 
             modelBuilder.Entity("ShippingSystem.Core.Entities.City", b =>
@@ -279,7 +279,7 @@ namespace ShippingSystem.Core.Migrations
 
                     b.HasIndex("GovernmentId");
 
-                    b.ToTable("Cities");
+                    b.ToTable("Cities", (string)null);
                 });
 
             modelBuilder.Entity("ShippingSystem.Core.Entities.DeliveryMan", b =>
@@ -316,7 +316,7 @@ namespace ShippingSystem.Core.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("DeliveryMen");
+                    b.ToTable("DeliveryMen", (string)null);
                 });
 
             modelBuilder.Entity("ShippingSystem.Core.Entities.Employee", b =>
@@ -341,7 +341,7 @@ namespace ShippingSystem.Core.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employees", (string)null);
                 });
 
             modelBuilder.Entity("ShippingSystem.Core.Entities.EmployeeAssignOrderToDelivery", b =>
@@ -369,7 +369,7 @@ namespace ShippingSystem.Core.Migrations
 
                     b.HasIndex("OrderID");
 
-                    b.ToTable("EmployeeAssignOrderToDeliveries");
+                    b.ToTable("EmployeeAssignOrderToDeliveries", (string)null);
                 });
 
             modelBuilder.Entity("ShippingSystem.Core.Entities.Government", b =>
@@ -386,7 +386,7 @@ namespace ShippingSystem.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Governments");
+                    b.ToTable("Governments", (string)null);
                 });
 
             modelBuilder.Entity("ShippingSystem.Core.Entities.Order", b =>
@@ -465,7 +465,7 @@ namespace ShippingSystem.Core.Migrations
 
                     b.HasIndex("VendorId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("ShippingSystem.Core.Entities.OrderCustomerPhones", b =>
@@ -487,7 +487,7 @@ namespace ShippingSystem.Core.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderCustomerPhones");
+                    b.ToTable("OrderCustomerPhones", (string)null);
                 });
 
             modelBuilder.Entity("ShippingSystem.Core.Entities.Product", b =>
@@ -519,7 +519,7 @@ namespace ShippingSystem.Core.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("ShippingSystem.Core.Entities.ShippingType", b =>
@@ -540,7 +540,7 @@ namespace ShippingSystem.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ShippingType");
+                    b.ToTable("ShippingType", (string)null);
                 });
 
             modelBuilder.Entity("ShippingSystem.Core.Entities.Status", b =>
@@ -557,7 +557,7 @@ namespace ShippingSystem.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Statuses");
+                    b.ToTable("Statuses", (string)null);
                 });
 
             modelBuilder.Entity("ShippingSystem.Core.Entities.Vendor", b =>
@@ -602,7 +602,7 @@ namespace ShippingSystem.Core.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Vendors");
+                    b.ToTable("Vendors", (string)null);
                 });
 
             modelBuilder.Entity("ShippingSystem.Core.Entities.VendorPhones", b =>
@@ -624,7 +624,7 @@ namespace ShippingSystem.Core.Migrations
 
                     b.HasIndex("VendorId");
 
-                    b.ToTable("VendorPhones");
+                    b.ToTable("VendorPhones", (string)null);
                 });
 
             modelBuilder.Entity("ShippingSystem.Core.Entities.WeightSetting", b =>
@@ -644,7 +644,7 @@ namespace ShippingSystem.Core.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("WeightSettings");
+                    b.ToTable("WeightSettings", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
