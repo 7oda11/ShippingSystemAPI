@@ -365,6 +365,7 @@ namespace ShippingSystem.API.Controllers
 
             return Ok(new { message = "Order status updated successfully", orderId, newStatus = ((OrderStatus)statusId).ToString() });
         }
+
         [HttpPut("EmployeeAssignOrderToDeliveyMan/{OrderID}/{DeliveryManId}")]
         [Authorize]
         public async Task<IActionResult> AssignOrderToDeliveryMan(int orderId, int deliveryManId)
@@ -424,7 +425,7 @@ namespace ShippingSystem.API.Controllers
                     break;
                 case "admin":
                 case "employee":
-                    orders = await unit.OrderRepository.GetAll();
+                    orders = await unit.OrderRepository.GetAllWithVendorNames();
 
                     break;
                  

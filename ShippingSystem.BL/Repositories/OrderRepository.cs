@@ -40,6 +40,12 @@ namespace ShippingSystem.BL.Repositories
           return await _context.Orders.Where(o=>o.Assignments.Any(a=>a.DeliveryID==deliveryManId)).ToListAsync();
         }
 
+
+        public async Task<IEnumerable<Order>> GetAllWithVendorNames()
+        {
+            return await context.Orders.Include(o => o.Vendor).Include(c=> c.City)
+                .ThenInclude(o => o.Government).Include(o => o.Status).ToListAsync();
+
         public async Task<Order> GetOrderByID(int orderId)
         {
             return await _context.Orders.Include(o =>o.City).ThenInclude(o=>o.Government)
@@ -55,6 +61,7 @@ namespace ShippingSystem.BL.Repositories
                     .Include(o => o.City)
                     .AsQueryable()
             );
+
         }
     }
 }

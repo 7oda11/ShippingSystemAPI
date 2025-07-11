@@ -15,6 +15,10 @@ namespace ShippingSystem.Core.Interfaces
         Task<DeliveryMan> FindByUserIdAsync(string userId);
         //Task<DeliveryMan> FindByUserIdAsync(string userId);
 
+        Task<IEnumerable<DeliveryMan>> GetByCityId(int cityID);
 
-    }
+            
+            
+            
+            }
 }
