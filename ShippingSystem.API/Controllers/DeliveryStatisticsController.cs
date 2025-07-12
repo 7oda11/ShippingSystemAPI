@@ -10,7 +10,7 @@ using System.Security.Claims;
 namespace ShippingSystem.API.Controllers
 {
     //[Authorize(Roles = "DeliveryMan")]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
 
     [Route("api/[controller]")]
     [ApiController]
@@ -41,12 +41,63 @@ namespace ShippingSystem.API.Controllers
                 .Select(g => new { Status = g.Key, Count = g.Count() });
             return Ok(stats);
         }
+        //[Authorize(Roles = "DeliveryMan")]
+        //[HttpPut("change-status")]
+        //public async Task<IActionResult> ChangeOrderStatusByDelivery(UpdateOrderStatusByDeliveryDTO dto)
+        //{
+        //    Console.WriteLine("===> DeliveryMan reached");
+        //    var userId = User.FindFirstValue("id");
+        //    var dm = await _unitOfWork.DeliveryManRepository.FindByUserIdAsync(userId);
+        //    Console.WriteLine("Is Authenticated: " + User.Identity.IsAuthenticated);
+        //    Console.WriteLine("UserId: " + User.FindFirstValue(ClaimTypes.NameIdentifier));
+        //    if (dm == null) return Unauthorized();
+
+        //    var assignment = (await _unitOfWork.EmployeeAssignedOrderToDeliveryRepository.GetAll())
+        //        .FirstOrDefault(a => a.DeliveryID == dm.Id && a.OrderID == dto.OrderId);
+
+        //    if (assignment == null) return NotFound("This order is not assigned to you.");
+
+        //    var order = assignment.Order;
+        //    if (order == null) return NotFound("Order not found.");
+
+        //    var newStatus = await _unitOfWork.StatusRepository.GetById(dto.NewStatusId);
+        //    if (newStatus == null) return BadRequest("Invalid status.");
+
+        //    order.StatusId = newStatus.Id;
+
+        //    if (newStatus.Name.ToLower() == OrderStatus.Cancelled.ToString().ToLower() || newStatus.Name.ToLower() == OrderStatus.Returned.ToString().ToLower())
+        //    {
+        //        if (string.IsNullOrWhiteSpace(dto.CancellationNote))
+        //            return BadRequest("Cancellation note is required when cancelling an order.");
+
+        //        var cancellation = new OrderCancellation
+        //        {
+        //            OrderId = order.Id,
+        //            Reason = dto.CancellationNote
+        //        };
+
+        //        await _unitOfWork.OrderCancellationRepository.Add(cancellation);
+        //    }
+
+        //    await _unitOfWork.OrderRepository.Update(order);
+        //    await _unitOfWork.SaveAsync();
+
+        //    return Ok("Order status updated successfully.");
+        //}
+
 
         [HttpPut("change-status")]
         public async Task<IActionResult> ChangeOrderStatusByDelivery(UpdateOrderStatusByDeliveryDTO dto)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Console.WriteLine("===> DeliveryMan reached");
+
+            var userId = User.FindFirstValue("id");
             var dm = await _unitOfWork.DeliveryManRepository.FindByUserIdAsync(userId);
+
+
+            Console.WriteLine("Is Authenticated: " + User.Identity.IsAuthenticated);
+            Console.WriteLine("UserId: " + User.FindFirstValue(ClaimTypes.NameIdentifier));
+
             if (dm == null) return Unauthorized();
 
             var assignment = (await _unitOfWork.EmployeeAssignedOrderToDeliveryRepository.GetAll())
@@ -62,7 +113,12 @@ namespace ShippingSystem.API.Controllers
 
             order.StatusId = newStatus.Id;
 
-            if (newStatus.Name.ToLower() == OrderStatus.Cancelled.ToString().ToLower() || newStatus.Name.ToLower() == OrderStatus.Returned.ToString().ToLower())
+            // 
+            var isCancellation = newStatus.Name.ToLower() == OrderStatus.Cancelled.ToString().ToLower()
+                              || newStatus.Name.ToLower() == OrderStatus.Returned.ToString().ToLower()
+                              || newStatus.Name.ToLower() == OrderStatus.Refused.ToString().ToLower();
+
+            if (isCancellation)
             {
                 if (string.IsNullOrWhiteSpace(dto.CancellationNote))
                     return BadRequest("Cancellation note is required when cancelling an order.");
@@ -75,12 +131,21 @@ namespace ShippingSystem.API.Controllers
 
                 await _unitOfWork.OrderCancellationRepository.Add(cancellation);
             }
+            else
+            {
+                
+                if (!string.IsNullOrWhiteSpace(dto.CancellationNote))
+                {
+                    order.Notes = dto.CancellationNote;
+                }
+            }
 
             await _unitOfWork.OrderRepository.Update(order);
             await _unitOfWork.SaveAsync();
 
             return Ok("Order status updated successfully.");
         }
+
 
 
     }

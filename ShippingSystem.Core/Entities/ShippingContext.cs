@@ -32,6 +32,7 @@ namespace ShippingSystem.Core.Entities
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<WeightSetting> WeightSettings { get; set; }
         public virtual DbSet<Status> Statuses { get; set; }
+        public virtual  DbSet<OrderCancellation> OrderCancellations { get; set; }
 
 
 

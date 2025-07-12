@@ -21,6 +21,9 @@ namespace ShippingSystem.API.Mapping
                dest.VendorName = src.Vendor?.Name ?? "";
                 dest.TotalPrice = (decimal)src.TotalCost;
                 dest.status = src.Status.Name;
+                decimal productTotal = src.Products?.Sum(p=>p.Price * (decimal)p.Quantity) ?? 0;
+                dest.ShippingCost = (decimal)src.TotalCost - productTotal;
+                dest.address = src.Address;
             }).ReverseMap();
 
             CreateMap<AddOrderDTO, Order>()
