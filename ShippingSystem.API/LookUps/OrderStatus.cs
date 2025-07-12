@@ -7,6 +7,9 @@
         Shipped = 3,
         Delivered = 4,
         Cancelled = 5,
-        Returned = 6
+        Returned = 6,
+        OnHold= 7,
+        Refused = 8
+            
     }
 }
