@@ -14,5 +14,8 @@ namespace ShippingSystem.Core.Interfaces
     {
         Task<EmployeeAssignOrderToDelivery?> FindAssignmentByDeliveryAndOrderId(int deliveryManId, int orderId);
 
+        Task<List<EmployeeAssignOrderToDelivery>> GetByDeliveryManId(int deliveryManId);
+
+
     }
 }

@@ -23,6 +23,8 @@ namespace ShippingSystem.Core.Interfaces
         Task<Order> GetOrderByID(int orderId);
         Task<IQueryable<Order>> GetQueryable();
 
+        Task<List<Order>> GetOrdersByIdsAsync(List<int> orderIds);
+
 
     }
 }
