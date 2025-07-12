@@ -15,6 +15,8 @@ using ShippingSystem.BL.Repositories;
 using System;
 using System.Text;
 using ShippingSystem.Core.SeedData;
+using ShippingSystem.API.Services;
+using ShippingSystem.Core.Interfaces.Service;
 
 namespace ShippingSystem.API
 {
@@ -53,6 +55,22 @@ namespace ShippingSystem.API
             builder.Services.AddScoped<IVendorRepository, VendorRepository>();
             builder.Services.AddScoped<IDeliveryManRepository, DeliveryManRepository>();
             builder.Services.AddScoped<IOrderCancellationRepository, OrderCancellationRepository>();
+            // Add to services section
+            builder.Services.AddScoped<DeliveryManPerformanceService>();
+            builder.Services.AddHttpClient(); // Add HttpClient factory
+
+            // Register GPT service
+            builder.Services.AddSingleton<IGPTChatService>(provider =>
+                new GPTChatService(
+                    builder.Configuration["OpenAIApiKey"],
+                    provider.GetRequiredService<ILogger<GPTChatService>>(),
+                    provider.GetRequiredService<IHttpClientFactory>().CreateClient()
+                )
+            );
+
+            // Add logging
+            builder.Logging.AddConsole();
+            builder.Logging.AddDebug();
 
             #endregion
 
@@ -85,6 +103,7 @@ namespace ShippingSystem.API
             builder.Services.AddScoped<IStatusRepository, StatusRepository>();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+
 
          
 

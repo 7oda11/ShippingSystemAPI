@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 namespace ShippingSystem.Core.Interfaces
 {
-    public interface IOrderCancellationRepository : IGenericRepository<OrderCancellation> { }
+    public interface IOrderCancellationRepository : IGenericRepository<OrderCancellation> 
+    {
+        Task<List<OrderCancellation>> GetReasonsByOrderIds(List<int> orderIds);
+
+    }
 
 }

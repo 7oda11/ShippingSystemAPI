@@ -25,6 +25,11 @@ namespace ShippingSystem.BL.Repositories
           return await _context.DeliveryMen.Where(dm=>dm.CityID == cityID)
               .ToListAsync();
         }
+
+        public async Task<int> Count()
+        {
+            return await _context.DeliveryMen.CountAsync();
+        }
     }
 
 }

@@ -22,7 +22,12 @@ namespace ShippingSystem.BL.Repositories
                 .FirstOrDefaultAsync(a => a.DeliveryID == deliveryManId && a.OrderID == orderId);
         }
 
-
+        public async Task<List<EmployeeAssignOrderToDelivery>> GetByDeliveryManId(int deliveryManId)
+        {
+            return await _context.EmployeeAssignOrderToDeliveries
+                .Where(x => x.DeliveryID == deliveryManId)
+                .ToListAsync();
+        }
 
     }
 }
