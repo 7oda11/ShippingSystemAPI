@@ -140,6 +140,7 @@ namespace ShippingSystem.API.Controllers
             {
                 query = query.Where(o => o.StatusId == status.Value);
             }
+           
 
             // 3. Apply search filtering
             if (!string.IsNullOrWhiteSpace(searchTerm))
@@ -167,6 +168,7 @@ namespace ShippingSystem.API.Controllers
 
             // 6. Mapping to DTO
             var result = mapper.Map<List<OrderDTO>>(pagedOrders);
+           
 
             return Ok(new
             {
