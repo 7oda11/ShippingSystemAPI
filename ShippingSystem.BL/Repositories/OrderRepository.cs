@@ -75,5 +75,12 @@ namespace ShippingSystem.BL.Repositories
 
         }
 
+        public async Task<List<Order>> GetOrdersByIdsAsync(List<int> orderIds)
+        {
+            return await _context.Orders
+                .Where(o => orderIds.Contains(o.Id))
+                .ToListAsync();
+        }
+
     }
 }

@@ -1,9 +1,12 @@
 ﻿using System.Numerics;
+using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ShippingSystem.API.Services;
 using ShippingSystem.Core.DTO;
 using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.Interfaces;
+using ShippingSystem.Core.Interfaces.Service;
 
 namespace ShippingSystem.API.Controllers
 {
@@ -13,11 +16,15 @@ namespace ShippingSystem.API.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly DeliveryManPerformanceService performanceService;
+        private readonly IGPTChatService gptService;
 
-        public EmployeeController(UserManager<ApplicationUser> userManager,IUnitOfWork unitOfWork)
+        public EmployeeController(UserManager<ApplicationUser> userManager,IUnitOfWork unitOfWork, DeliveryManPerformanceService performanceService, IGPTChatService gptService)
         {
             this._userManager = userManager;
             this._unitOfWork = unitOfWork;
+            this.performanceService = performanceService;
+            this.gptService = gptService;
         }
         [HttpPost("Create")]
         public async Task<IActionResult> Create([FromBody] CreateEmployeeDTO model)
@@ -145,6 +152,50 @@ namespace ShippingSystem.API.Controllers
                 BranchName = emp.Branch?.Name
             };
             return Ok(result);
+        }
+
+
+        [HttpPost("AskDeliveryBot")]
+        public async Task<IActionResult> AskDeliveryBot([FromBody] string question)
+        {
+            try
+            {
+                // Handle common questions without OpenAI
+                if (question.Contains("how many", StringComparison.OrdinalIgnoreCase) &&
+                    question.Contains("delivery men", StringComparison.OrdinalIgnoreCase))
+                {
+                    var deliveryMenCount = await _unitOfWork.DeliveryManRepository.Count();
+                    return Ok(new { answer = $"There are currently {deliveryMenCount} delivery personnel in our system." });
+                }
+
+                var allDeliveryMen = await _unitOfWork.DeliveryManRepository.GetAll();
+                var promptBuilder = new StringBuilder("Delivery Performance Summary:\n");
+
+                // Only include top 5 performers to reduce token usage
+                var topDeliveryMen = allDeliveryMen.Take(5).ToList();
+
+                foreach (var dm in topDeliveryMen)
+                {
+                    var perf = await performanceService.GetDeliveryManPerformanceAsync(dm.Id);
+                    if (perf == null) continue;
+
+                    promptBuilder.AppendLine($@"
+                        [ID: {dm.Id}] {dm.Name}
+                        - ✓: {perf.DeliveredCount} | ✗: {perf.CancelledCount} | ↩: {perf.ReturnedCount}
+                        - Top Cancel: {perf.MostFrequentCancellationReason}
+                        ----------------------");
+                    }
+
+                promptBuilder.AppendLine($"\nQuestion: {question}");
+                promptBuilder.AppendLine("Answer in English based on above data:");
+
+                var response = await gptService.AskAsync(promptBuilder.ToString());
+                return Ok(new { answer = response });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while processing your request");
+            }
         }
 
     }

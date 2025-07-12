@@ -17,8 +17,9 @@ namespace ShippingSystem.Core.Interfaces
 
         Task<IEnumerable<DeliveryMan>> GetByCityId(int cityID);
 
-            
-            
-            
-            }
+
+        Task<int> Count();
+
+
+    }
 }

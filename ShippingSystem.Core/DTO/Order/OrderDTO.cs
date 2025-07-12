@@ -19,7 +19,6 @@ namespace ShippingSystem.Core.DTO.Order
         public string status { get; set; }
         public int statusId { get; set; }
         public decimal TotalPrice { get; set; }
-<
         public decimal ShippingCost { get; set; }
         public string address{ get; set; }
 
