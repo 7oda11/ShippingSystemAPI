@@ -4,6 +4,7 @@ using ShippingSystem.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -57,6 +58,13 @@ namespace ShippingSystem.BL.Repositories
              await _context.SaveChangesAsync();
 
 
+        }
+
+      
+
+        public async Task<bool> AnyAsync(Func<T, bool> predicate)
+        {
+            return await Task.FromResult(_dbSet.Any(predicate));
         }
     }
 }
