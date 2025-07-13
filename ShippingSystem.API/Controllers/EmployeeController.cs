@@ -1,9 +1,12 @@
 ﻿using System.Numerics;
+using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ShippingSystem.Core.DTO;
 using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.Interfaces;
+using ShippingSystem.Core.Interfaces.Service;
+
 
 namespace ShippingSystem.API.Controllers
 {
@@ -13,11 +16,12 @@ namespace ShippingSystem.API.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
-
-        public EmployeeController(UserManager<ApplicationUser> userManager,IUnitOfWork unitOfWork)
+        private readonly IGPTChatService _gptService;
+        public EmployeeController(UserManager<ApplicationUser> userManager,IUnitOfWork unitOfWork, IGPTChatService gptService)
         {
             this._userManager = userManager;
             this._unitOfWork = unitOfWork;
+            _gptService = gptService;
         }
         [HttpPost("Create")]
         public async Task<IActionResult> Create([FromBody] CreateEmployeeDTO model)
@@ -146,6 +150,40 @@ namespace ShippingSystem.API.Controllers
             };
             return Ok(result);
         }
+
+        [HttpPost("AskDeliveryBot")]
+        public async Task<IActionResult> AskDeliveryBot([FromBody] string question)
+        {
+            var allDeliveryMen = await _unitOfWork.DeliveryManRepository.GetAll();
+            var promptBuilder = new StringBuilder();
+
+            promptBuilder.AppendLine("Delivery Performance Data:");
+
+            foreach (var dm in allDeliveryMen)
+            {
+                var perf = await performanceService.GetDeliveryManPerformanceAsync(dm.Id);
+                if (perf == null) continue;
+
+                promptBuilder.AppendLine($@"
+                                        Delivery Man: {perf.DeliveryManName} (ID: {perf.DeliveryManId})
+                                        - Delivered: {perf.DeliveredCount}
+                                        - Cancelled: {perf.CancelledCount}
+                                        - Returned: {perf.ReturnedCount}
+                                        - Total Assigned: {perf.AssignedCount}
+                                        - Top Cancellation Reason: {perf.MostFrequentCancellationReason}
+                                        ----------------------");
+            }
+
+            promptBuilder.AppendLine($"\nQuestion: {question}");
+            promptBuilder.AppendLine("Answer in English based on above data:");
+
+            var response = await gptService.AskAsync(promptBuilder.ToString());
+            return Ok(new { answer = response });
+        }
+
+
+
+
 
     }
 }
