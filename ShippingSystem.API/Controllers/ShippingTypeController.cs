@@ -65,11 +65,19 @@ namespace ShippingSystem.API.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var entity = await _unitOfWork.ShippingTypeRepository.GetById(id);
-            if (entity == null) return NotFound();
+            if (entity == null)
+                return NotFound();
 
-           await _unitOfWork.ShippingTypeRepository.Delete(entity);
-            //await _unitOfWork.SaveAsync();
+            // تأكدي من وجود أوردرات مرتبطة بـ ShippingType
+            bool hasOrders = await _unitOfWork.OrderRepository
+                .AnyAsync(o => o.ShippingTypeId == id);
+
+            if (hasOrders)
+                return BadRequest("Cannot delete this shipping type because it is used in existing orders.");
+
+            await _unitOfWork.ShippingTypeRepository.Delete(entity);
             return NoContent();
         }
+
     }
 }

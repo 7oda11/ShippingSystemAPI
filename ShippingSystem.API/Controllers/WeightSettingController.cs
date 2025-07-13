@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using ShippingSystem.Core.DTO;
+using ShippingSystem.Core.DTO.Branch;
 using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.Interfaces;
 using System.Collections.Generic;
@@ -54,10 +55,13 @@ namespace ShippingSystem.API.Controllers
             entity.WeightRange = dto.WeightRange;
             entity.ExtraPrice = dto.ExtraPrice;
 
-            _unitOfWork.WeightSettingRepository.Update(entity);
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.WeightSettingRepository.Update(entity); // ✅ await here!
+
             return Ok(_mapper.Map<WeightSettingDTO>(entity));
         }
+
+
+
         [HttpDelete("Delete-WeightSetting/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -65,8 +69,8 @@ namespace ShippingSystem.API.Controllers
             if (entity == null) return NotFound();
 
             _unitOfWork.WeightSettingRepository.Delete(entity);
-            await _unitOfWork.SaveAsync();
-            return Ok();
+            //await _unitOfWork.SaveAsync();
+            return NoContent();
         }
     }
 }
