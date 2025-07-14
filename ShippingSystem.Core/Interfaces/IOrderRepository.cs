@@ -1,4 +1,5 @@
-﻿using ShippingSystem.Core.Entities;
+﻿using ShippingSystem.Core.DTO;
+using ShippingSystem.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,27 @@ namespace ShippingSystem.Core.Interfaces
 
         Task<List<Order>> GetOrdersByIdsAsync(List<int> orderIds);
 
+        Task<List<Order>> GetByDateRangeAsync(DateTime start, DateTime end);
 
+        Task<List<Order>> GetAllOrdersAsync();
+        Task<Order> GetLastOrderInCityAsync(int cityId);
+        Task<List<Order>> GetCancelledOrdersAsync(DateTime startDate, DateTime endDate);
+        Task<List<Order>> GetOrdersByCityAsync(int cityId);
+
+        Task<List<Order>> GetByDateRangeWithDetailsAsync(
+            DateTime start,
+            DateTime end,
+            bool includeAssignments = false,
+            bool includeDeliveryMan = false,
+            bool includeCancellations = false);
+
+        Task<List<Order>> GetByCityAndDateRangeWithDetailsAsync(
+            int cityId,
+            DateTime start,
+            DateTime end,
+            bool includeAssignments = false,
+            bool includeDeliveryMan = false);
     }
+
 }
+

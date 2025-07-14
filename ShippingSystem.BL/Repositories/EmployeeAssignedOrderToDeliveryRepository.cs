@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ShippingSystem.Core.Entities;
+using ShippingSystem.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ShippingSystem.BL.Repositories
 {
-    public class EmployeeAssignedOrderToDeliveryRepository: GenericRepository<Core.Entities.EmployeeAssignOrderToDelivery>, Core.Interfaces.IEmployeeAssignedOrderToDeliveryRepository
+    public class EmployeeAssignedOrderToDeliveryRepository: GenericRepository<EmployeeAssignOrderToDelivery>, IEmployeeAssignedOrderToDeliveryRepository
     {
         public EmployeeAssignedOrderToDeliveryRepository(ShippingContext context) : base(context)
         {
@@ -28,6 +29,7 @@ namespace ShippingSystem.BL.Repositories
                 .Where(x => x.DeliveryID == deliveryManId)
                 .ToListAsync();
         }
+
 
     }
 }

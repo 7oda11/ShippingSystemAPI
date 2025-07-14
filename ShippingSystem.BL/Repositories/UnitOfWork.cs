@@ -47,7 +47,7 @@ namespace ShippingSystem.BL.Repositories
             _employeeAssignedOrderToDeliveryRepository ??= new EmployeeAssignedOrderToDeliveryRepository(_context);
 
         public IOrderRepository OrderRepository =>
-            _orderRepository ??= new OrderRepository(_context);
+            _orderRepository ??= new OrderRepository(_context, _statusRepository);
 
         public IEmployeeRepository EmployeeRepository =>
             _employeeRepository ??= new EmployeeRepository(_context);

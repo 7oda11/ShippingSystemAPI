@@ -14,5 +14,7 @@ namespace ShippingSystem.Core.Interfaces
         Task<Status> AddAsync(Status status);
         Task UpdateAsync(Status status);
         Task DeleteAsync(Status status);
+        Task<Status> FindByNameAsync(string name);
+        Task<int> GetStatusIdByNameAsync(string name);
     }
 }

@@ -48,9 +48,14 @@ namespace ShippingSystem.BL.Repositories
              .FirstOrDefaultAsync(c => c.Name == name);
         }
 
-      
- 
-        
-            
+        public async Task<City> FindByNameAsync(string name)
+        {
+            return await _context.Cities
+                .FirstOrDefaultAsync(c => c.Name.Contains(name));
+        }
+
+
+
+
     }
 }

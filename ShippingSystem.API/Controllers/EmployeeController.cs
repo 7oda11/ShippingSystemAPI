@@ -1,8 +1,10 @@
 ﻿using System.Numerics;
 using System.Text;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using ShippingSystem.API.Services;
+using ShippingSystem.API.Service;
 using ShippingSystem.Core.DTO;
 using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.Interfaces;
@@ -16,15 +18,22 @@ namespace ShippingSystem.API.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly DeliveryManPerformanceService performanceService;
-        private readonly IGPTChatService gptService;
+        private readonly ILogger<EmployeeController> _logger;
+        private readonly IWebHostEnvironment _env;
+        private readonly ChatBotService _chatBotService;
 
-        public EmployeeController(UserManager<ApplicationUser> userManager,IUnitOfWork unitOfWork, DeliveryManPerformanceService performanceService, IGPTChatService gptService)
+        public EmployeeController(
+            UserManager<ApplicationUser> userManager,
+            IUnitOfWork unitOfWork,
+            ILogger<EmployeeController> logger,
+            IWebHostEnvironment env,
+            ChatBotService chatBotService)
         {
-            this._userManager = userManager;
-            this._unitOfWork = unitOfWork;
-            this.performanceService = performanceService;
-            this.gptService = gptService;
+            _userManager = userManager;
+            _unitOfWork = unitOfWork;
+            _logger = logger;
+            _env = env;
+            _chatBotService = chatBotService;
         }
         [HttpPost("Create")]
         public async Task<IActionResult> Create([FromBody] CreateEmployeeDTO model)
@@ -154,47 +163,28 @@ namespace ShippingSystem.API.Controllers
             return Ok(result);
         }
 
-
         [HttpPost("AskDeliveryBot")]
         public async Task<IActionResult> AskDeliveryBot([FromBody] string question)
         {
             try
             {
-                // Handle common questions without OpenAI
-                if (question.Contains("how many", StringComparison.OrdinalIgnoreCase) &&
-                    question.Contains("delivery men", StringComparison.OrdinalIgnoreCase))
-                {
-                    var deliveryMenCount = await _unitOfWork.DeliveryManRepository.Count();
-                    return Ok(new { answer = $"There are currently {deliveryMenCount} delivery personnel in our system." });
-                }
-
-                var allDeliveryMen = await _unitOfWork.DeliveryManRepository.GetAll();
-                var promptBuilder = new StringBuilder("Delivery Performance Summary:\n");
-
-                // Only include top 5 performers to reduce token usage
-                var topDeliveryMen = allDeliveryMen.Take(5).ToList();
-
-                foreach (var dm in topDeliveryMen)
-                {
-                    var perf = await performanceService.GetDeliveryManPerformanceAsync(dm.Id);
-                    if (perf == null) continue;
-
-                    promptBuilder.AppendLine($@"
-                        [ID: {dm.Id}] {dm.Name}
-                        - ✓: {perf.DeliveredCount} | ✗: {perf.CancelledCount} | ↩: {perf.ReturnedCount}
-                        - Top Cancel: {perf.MostFrequentCancellationReason}
-                        ----------------------");
-                    }
-
-                promptBuilder.AppendLine($"\nQuestion: {question}");
-                promptBuilder.AppendLine("Answer in English based on above data:");
-
-                var response = await gptService.AskAsync(promptBuilder.ToString());
+                var response = await _chatBotService.GetResponseAsync(question);
                 return Ok(new { answer = response });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "An error occurred while processing your request");
+                _logger.LogError(ex, "Error in delivery bot");
+
+                bool isArabic = Regex.IsMatch(question, @"\p{IsArabic}");
+                string errorMessage = isArabic ?
+                    "حدث خطأ أثناء معالجة طلبك. يرجى المحاولة لاحقًا" :
+                    "An error occurred while processing your request. Please try again later";
+
+                return StatusCode(500, new
+                {
+                    error = errorMessage,
+                    details = _env.IsDevelopment() ? ex.Message : null
+                });
             }
         }
 

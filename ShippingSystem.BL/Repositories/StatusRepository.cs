@@ -47,6 +47,19 @@ namespace ShippingSystem.BL.Repositories
             context.Statuses.Remove(status);
             await context.SaveChangesAsync();
         }
+        public async Task<Status> FindByNameAsync(string name)
+        {
+            return await _context.Statuses
+                .FirstOrDefaultAsync(s => s.Name == name);
+        }
+
+        public async Task<int> GetStatusIdByNameAsync(string name)
+        {
+            var status = await _context.Statuses
+                .FirstOrDefaultAsync(s => s.Name == name);
+
+            return status?.Id ?? 0;
+        }
 
     }
 }

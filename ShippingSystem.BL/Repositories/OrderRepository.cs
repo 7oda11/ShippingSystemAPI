@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ShippingSystem.Core.DTO;
 using ShippingSystem.Core.Entities;
+using ShippingSystem.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +14,11 @@ namespace ShippingSystem.BL.Repositories
     public class OrderRepository : GenericRepository<Core.Entities.Order>, Core.Interfaces.IOrderRepository
     {
         private readonly ShippingContext context;
-
-        public OrderRepository(ShippingContext context) : base(context)
+        private readonly IStatusRepository statusRepository;
+        public OrderRepository(ShippingContext context, IStatusRepository statusRepository) : base(context)
         {
             this.context = context;
+            this.statusRepository = statusRepository;
         }
 
         public async Task<bool> HasOrdersForVendorAsync(int vendorId)
@@ -79,6 +82,117 @@ namespace ShippingSystem.BL.Repositories
         {
             return await _context.Orders
                 .Where(o => orderIds.Contains(o.Id))
+                .ToListAsync();
+        }
+
+        public async Task<List<Order>> GetByDateRangeAsync(DateTime start, DateTime end)
+        {
+            return await context.Orders
+                .Where(o => o.CreationDate >= start && o.CreationDate <= end)
+                .Include(o => o.Status)
+                .Include(o => o.OrderCancellation)
+                .Include(o => o.Assignments)
+                    .ThenInclude(a => a.DeliveryMan)
+                .ToListAsync();
+        }
+
+        public async Task<List<Order>> GetAllOrdersAsync()
+        {
+            return await _context.Orders.ToListAsync();
+        }
+
+        public async Task<Order> GetLastOrderInCityAsync(int cityId)
+        {
+            return await _context.Orders
+                .Where(o => o.CityId == cityId)
+                .OrderByDescending(o => o.CreationDate)
+                .Include(o => o.Assignments)
+                    .ThenInclude(a => a.DeliveryMan)
+                .Include(o => o.Status)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<List<Order>> GetCancelledOrdersAsync(DateTime startDate, DateTime endDate)
+        {
+            var cancelledStatusId = await statusRepository.GetStatusIdByNameAsync("Cancelled");
+
+            return await _context.Orders
+                .Where(o => o.StatusId == cancelledStatusId &&
+                            o.CreationDate >= startDate &&
+                            o.CreationDate <= endDate)
+                .ToListAsync();
+        }
+
+        public async Task<List<Order>> GetOrdersByCityAsync(int cityId)
+        {
+            return await _context.Orders
+                .Where(o => o.CityId == cityId)
+                .Include(o => o.Assignments)
+                    .ThenInclude(a => a.DeliveryMan)
+                .Include(o => o.Status)
+                .Include(o => o.OrderCancellation)
+                .ToListAsync();
+        }
+
+        public async Task<List<Order>> GetByDateRangeWithDetailsAsync(
+      DateTime start,
+      DateTime end,
+      bool includeAssignments = false,
+      bool includeDeliveryMan = false,
+      bool includeCancellations = false)
+        {
+            var query = context.Orders
+                .Where(o => o.CreationDate >= start && o.CreationDate <= end)
+                .AsQueryable();
+
+            if (includeAssignments)
+            {
+                query = query.Include(o => o.Assignments);
+
+                if (includeDeliveryMan)
+                {
+                    query = query.Include(o => o.Assignments)
+                                 .ThenInclude(a => a.DeliveryMan);
+                }
+            }
+
+            if (includeCancellations)
+            {
+                query = query.Include(o => o.OrderCancellation);
+            }
+
+            return await query
+                .Include(o => o.Status)
+                .ToListAsync();
+        }
+
+        public async Task<List<Order>> GetByCityAndDateRangeWithDetailsAsync(
+            int cityId,
+            DateTime start,
+            DateTime end,
+            bool includeAssignments = false,
+            bool includeDeliveryMan = false)
+        {
+            var query = context.Orders
+                .Where(o => o.CityId == cityId &&
+                           o.CreationDate >= start &&
+                           o.CreationDate <= end)
+                .AsQueryable();
+
+            if (includeAssignments)
+            {
+                query = query.Include(o => o.Assignments);
+
+                if (includeDeliveryMan)
+                {
+                    query = query.Include(o => o.Assignments)
+                                 .ThenInclude(a => a.DeliveryMan);
+                }
+            }
+
+            return await query
+                .Include(o => o.Status)
+                .Include(o => o.OrderCancellation)
                 .ToListAsync();
         }
 

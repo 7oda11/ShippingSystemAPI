@@ -18,8 +18,9 @@ namespace ShippingSystem.Core.Interfaces
         Task<IEnumerable<DeliveryMan>> GetByCityId(int cityID);
 
 
+        Task<List<DeliveryMan>> GetAllAsync();
         Task<int> Count();
-
+        Task<DeliveryMan> FindByNameAsync(string name);
 
     }
 }

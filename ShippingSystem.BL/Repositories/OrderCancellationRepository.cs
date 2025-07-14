@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ShippingSystem.Core.DTO;
 using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.Interfaces;
 using System;
@@ -19,6 +20,7 @@ namespace ShippingSystem.BL.Repositories
                 .Where(c => orderIds.Contains(c.OrderId))
                 .ToListAsync();
         }
+
     }
 
 
