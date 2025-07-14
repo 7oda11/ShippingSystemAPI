@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using ShippingSystem.Core.DTO.Branch;
 using ShippingSystem.Core.Entities;
 using ShippingSystem.Core.Interfaces;
+using static iTextSharp.text.pdf.events.IndexEvents;
 
 namespace ShippingSystem.API.Controllers
 {
@@ -78,7 +79,8 @@ namespace ShippingSystem.API.Controllers
             }
 
             mapper.Map(branchDTO, existingBranch);
-            _unitOfWork.BranchRepository.Update(existingBranch);
+          
+           await _unitOfWork.BranchRepository.Update(existingBranch);
             //await _unitOfWork.SaveAsync();
             return Ok(mapper.Map<BranchDTO>(existingBranch)); 
         }
